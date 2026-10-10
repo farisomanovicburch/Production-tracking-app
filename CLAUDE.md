@@ -3,7 +3,7 @@
 ## Critical Rules
 
 - **NEVER** run destructive database commands (DROP, DELETE, TRUNCATE) unless I explicitly ask for it.
-- **NEVER** commit anything. Leave the commit message and a PR description for me to do manually. 
+- **NEVER** commit anything. Leave the commit message (and, at the end of a milestone, the PR description) for me to do manually.
 - **NEVER** push to any branch.
 
 ## Technology stack
@@ -12,6 +12,7 @@
 - Local server: XAMPP
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/
+  - js/services/: the only frontend code that calls the backend (M5 frontend MVC rule)
 - backend/: routes/, services/, dao/, middleware/, config/, logs/
 - docs/: AI_LOG.md and other documentation
 ## Frontend rules
@@ -61,7 +62,7 @@ If you are unsure which tier applies, use the full plan.
 
 - **Scope discipline:** Only change what the current task requires. If you notice an unrelated problem, bug, or improvement opportunity, do NOT fix it in this task and do NOT edit `todo.md`. List it under "Found, not fixed" in your final summary, with the file and line, so I can add it myself.
 - **Checkpoints:** For any task that touches more than one layer (schema / backend / frontend), pause after completing each layer, summarize what you changed and why, and wait for me to say continue. For single-file trivial tasks, no checkpoint needed.
-- **`todo.md` is tracked in git.** It lives on `main` and is updated by me, manually, after a PR is merged. Do not edit it on a feature branch: that makes every PR conflict on the same file, and I decide when an item is truly resolved.
+- **`todo.md` is tracked in git and edited only by me, manually.** Do not edit it: I decide when an item is truly resolved.
 
 ## Testing Rules
 
@@ -126,9 +127,9 @@ At the end of every task, tell me exactly how to convince myself the changes are
 
 ## Git Workflow
 
-- **Before making any changes:** Check if I have created a branch. If not, create a branch and switch to it before writing any code.
-- **Branch naming:** `fix/` for bugs, `feature/` for new features, `chore/` for non-code changes, `auto/` only for autonomous `/todo` runs.
+- **One branch per milestone (course rule).** All work for milestone N, including `.gitignore` and `CLAUDE.md` changes, happens on the branch `milestoneN`. There are no other branches. Before making any changes, check that the current branch is the current milestone's branch. If it is not, stop and ask me before creating or switching branches.
+- **Only the course reviewer merges.** The `milestoneN` → `main` PR is merged into `main` by the reviewer after approval. Never merge it. The next milestone's branch is created from `main` only after that merge. Nothing goes directly to `main`.
 - **Commit convention:** `type: short description` in present tense (e.g., `fix: prevent negative stock on material usage`)
-- **After changes are done:** Provide a commit message and a PR description (concise but more detailed than the commit message). The commit body should explain WHY the change was made — the diff already shows what.
-- **A commit message must stand on its own** and state the actual problem in its own words. It never says only "fixes Group 7 #18". If the todo entry reads "Group 7 #18: export button fires twice on double click", the commit is `fix: prevent double-click from doubling export request burst`, and the body explains why double-firing was harmful. **The todo entry is where the work came from; it is not what the work was.** In the PR description (never in the commit message or PR title) you may add one last line `Todo item: Group N #M` so I can find the source.
-- **`.gitignore` and `CLAUDE.md` changes also go through a `chore/` branch and a PR**, like everything else. Nothing goes directly to `main`.
+- **After changes are done:** Provide a commit message. The commit body should explain WHY the change was made — the diff already shows what.
+- **PR description:** one per milestone, for the `milestoneN` → `main` PR. Write it when I ask for it at the end of the milestone, covering everything the milestone changed (concise but more detailed than the commit messages).
+- **A commit message must stand on its own** and state the actual problem in its own words. It never says only "fixes Group 7 #18". If the todo entry reads "Group 7 #18: export button fires twice on double click", the commit is `fix: prevent double-click from doubling export request burst`, and the body explains why double-firing was harmful. **The todo entry is where the work came from; it is not what the work was.** In the milestone PR description (never in a commit message or the PR title) you may list `Todo item: Group N #M` lines so I can find the sources.
