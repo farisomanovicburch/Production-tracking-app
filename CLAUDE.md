@@ -18,6 +18,7 @@
 ## Frontend rules
 - Each view is in its own file in frontend/views/.
 - Use Bootstrap 5 classes; avoid inline styles.
+- Responsive design is a project requirement: every frontend change must keep the app usable on a phone (360px wide). Check the change at phone width as well as desktop before calling it done.
 ## Backend rules
 - Requests go: route -> service -> DAO -> database.
 - Only services call DAO classes. Routes never call DAO classes directly.
