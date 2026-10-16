@@ -19,7 +19,6 @@
   --pt-primary-light: #a5b4fc;
 
   --pt-nav-bg: #1e1b4b;
-  --pt-nav-footer-bg: #312e81;
   --pt-nav-heading: #818cf8;
   --pt-nav-link: #c7d2fe;
 
@@ -88,12 +87,13 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* The template fixes the brand at the sidebar's 225px width, which leaves no
-   room for the language switcher and user menu on a phone. */
-@media (max-width: 575.98px) {
-  .sb-topnav .navbar-brand {
-    width: auto;
-  }
+/* The template fixes the brand at the sidebar's 225px width so it lines up
+   with the sidebar below. "Production Tracker" is wider than that and ran
+   under the toggle button; with the toggle moved to the left edge there is
+   nothing left to line up with, and a phone needs the room for the language
+   switcher and user menu. */
+.sb-topnav .navbar-brand {
+  width: auto;
 }
 
 /* ---------- Side navigation (replaces the template's sb-sidenav-dark) ---------- */
@@ -133,8 +133,4 @@
 .pt-sidenav .nav-link:hover .sb-nav-link-icon,
 .pt-sidenav .nav-link.active .sb-nav-link-icon {
   color: #fff;
-}
-
-.pt-sidenav .sb-sidenav-footer {
-  background-color: var(--pt-nav-footer-bg);
 }
