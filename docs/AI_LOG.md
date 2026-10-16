@@ -71,6 +71,20 @@
   output chart, machine overview) and dropped "in progress" runs, because in practice I
   always log a run once it is finished. I removed the breadcrumb and made the clock bigger.
 
+**4. README draft**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** write the README draft (a Milestone 1 deliverable) with every section the
+  course requires: project description, entities and relationships, roles and test
+  accounts, the external API and its feature, running the project locally, the Swagger
+  link and the live link.
+- **Main prompt:** "Update the now empty readme file according to those", sent with the
+  README requirements from the course PDF.
+- **What was generated:** the full `README.md`. Entities, roles and the weather feature
+  come from the design decisions made earlier in Milestone 1; anything that does not
+  exist yet (the `.sql` file, `config.example.php`, test accounts, Swagger, the live
+  link) is a placeholder that names the milestone that adds it.
+- **What I kept, changed or rejected:** _to fill in after I review the draft._
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**
