@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Production Tracker</title>
+        <link href="assets/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+        <link href="assets/lib/sb-admin/styles.css" rel="stylesheet" />
+        <link href="css/app.css" rel="stylesheet" />
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark pt-topnav">
+            <a class="navbar-brand ps-3" href="#dashboard">
+                <i class="fa-solid fa-industry me-2"></i><span class="d-none d-sm-inline">Production Tracker</span>
+            </a>
+            <button type="button" class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <ul class="navbar-nav align-items-center ms-auto me-3 me-lg-4">
+                <li class="nav-item me-2">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Language">
+                        <button type="button" class="btn btn-outline-light active" data-lang="en" aria-pressed="true">EN</button>
+                        <button type="button" class="btn btn-outline-light" data-lang="bs" aria-pressed="false">BS</button>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="userMenu" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-user fa-fw"></i><span class="visually-hidden">User menu</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li><h6 class="dropdown-header">Demo Admin</h6></li>
+                        <li><a class="dropdown-item" href="#profile"><i class="fa-solid fa-id-badge fa-fw me-2"></i>Profile</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#login"><i class="fa-solid fa-right-from-bracket fa-fw me-2"></i>Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion pt-sidenav" id="sidenavAccordion" aria-label="Main navigation">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Overview</div>
+                            <a class="nav-link active" href="#dashboard" aria-current="page">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-gauge-high fa-fw"></i></div>
+                                Dashboard
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Production</div>
+                            <a class="nav-link" href="#runs">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-list-check fa-fw"></i></div>
+                                Runs
+                            </a>
+                            <a class="nav-link" href="#run-new">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-circle-plus fa-fw"></i></div>
+                                New run
+                            </a>
+                            <a class="nav-link" href="#conversions">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-scissors fa-fw"></i></div>
+                                Conversions
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">Maintenance</div>
+                            <a class="nav-link" href="#maintenance">
+                                <div class="sb-nav-link-icon"><i class="fa-solid fa-screwdriver-wrench fa-fw"></i></div>
+                                Maintenance log
+                            </a>
+
+                            <div class="admin-only">
+                                <div class="sb-sidenav-menu-heading">Master data <span class="badge rounded-pill text-bg-primary ms-1">Admin</span></div>
+                                <a class="nav-link" href="#machines">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-gears fa-fw"></i></div>
+                                    Machines
+                                </a>
+                                <a class="nav-link" href="#products">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-box fa-fw"></i></div>
+                                    Products
+                                </a>
+                                <a class="nav-link" href="#materials">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-boxes-stacked fa-fw"></i></div>
+                                    Materials
+                                </a>
+                                <a class="nav-link" href="#recipes">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-flask fa-fw"></i></div>
+                                    Recipes
+                                </a>
+                            </div>
+
+                            <div class="admin-only">
+                                <div class="sb-sidenav-menu-heading">Administration <span class="badge rounded-pill text-bg-primary ms-1">Admin</span></div>
+                                <a class="nav-link" href="#users">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-users fa-fw"></i></div>
+                                    Users
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                        Demo Admin
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-header">Quick actions</div>
+                            <div class="card-body">
+                                <a class="btn btn-primary me-2" href="#run-new"><i class="fa-solid fa-circle-plus me-1"></i>New run</a>
+                                <a class="btn btn-outline-primary" href="#runs">View runs</a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-white border-top mt-auto">
+                    <div class="container-fluid px-4 small text-muted">&copy; 2026 Production Tracker</div>
+                </footer>
+            </div>
+        </div>
+        <script src="assets/lib/bootstrap/bootstrap.bundle.min.js"></script>
+        <script src="assets/lib/sb-admin/scripts.js"></script>
+    </body>
+</html>
