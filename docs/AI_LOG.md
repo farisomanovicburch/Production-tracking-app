@@ -86,6 +86,28 @@
 - **What I kept, changed or rejected:** AI added too many unecessary things for now such as 
 how to run this app localy by yourself and stuff like that. I believe for now they are useless.
 
+**5. Final page list**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** settle every page of the application before finishing the sidebar and
+  adding spapp.
+- **Main prompt:** my list of pages (dashboard, new and list pages for runs,
+  conversions and maintenance, users, machines, products, materials, recipes,
+  login/signup, a details page for finished jobs and a Machine Setup page), with "If
+  you think i am missing any pages let me know."
+- **What was generated:** a review of the list with the pages it was missing and the
+  design questions behind them.
+- **What I kept, changed or rejected:** I added the pages it suggested: Recipe Setup
+  (a recipe is a list of materials, like a machine's parameters), Profile (the user menu
+  already linked to it), a 404 page, and separate Login and Register pages. I chose
+  three details pages (run, conversion, maintenance) instead of one shared page. For
+  material deliveries I chose an "Add delivery" button with a modal on the Materials
+  page, because I do not need a delivery history. The AI suggested correcting a
+  finished job by opening the "New" form filled in with its values; I rejected that as
+  too complex and chose an Edit button on the details page that unlocks its fields and
+  shows an Update button. I also dropped the EN/BS translations planned in entry 3: I
+  am the only person using the app, so they only added complexity. The language switch
+  was removed from the top bar; I may add translations after the course.
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**

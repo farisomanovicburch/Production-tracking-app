@@ -17,11 +17,12 @@ later:
   quantities.
 - **Maintenance log:** preventive and corrective work done on each machine.
 - **Material stock:** current stock of every raw material, with a low-stock warning on
-  the dashboard when a material drops to its minimum.
+  the dashboard when a material drops to its minimum. Production runs use stock up;
+  deliveries are added on the Materials page.
 - **Master data:** machines, products, materials and recipes, managed by an admin.
 
-Jobs are logged after they are finished, mostly from a PC. The interface is available in
-English and Bosnian, and works on phones as well as desktops.
+Jobs are logged after they are finished, mostly from a PC. The interface is in English
+and works on phones as well as desktops.
 
 It is a single-page application (SPA) with a REST backend, built for the IT 2001 Web
 Programming course at International Burch University.
