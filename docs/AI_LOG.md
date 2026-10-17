@@ -179,3 +179,20 @@ so no unstaged changes there.
   shows how short a material is), numbers no longer wrap, and each pair of quick-action
   buttons is stacked at full width. Lesson: a page that looks right on my PC proves
   nothing about a phone; check it at phone width every time.
+
+**7. Editing a finished job through the "New" form**
+- **What was wrong:** to correct a finished run, conversion or maintenance record, the
+  AI suggested an Edit button that opens the "New" form filled in with the saved values,
+  so every "New" form would work in two modes. New Run is a multi-step wizard, and
+  filling a wizard with saved values, while keeping its steps and dependent fields
+  correct, is far more complex than the problem needs.
+- **How I noticed:** I thought about how it would work for the New Run wizard, saw that
+  it added unnecessary complexity, and asked for a different approach.
+- **How I fixed it:** the Edit button on the details page unlocks the fields on that
+  same page and shows Update and Cancel buttons. All fields sit in one
+  `<fieldset disabled>`, so one attribute locks or unlocks them all. Fields that
+  other fields depend on (the machine, product and recipe of a run; the machine and
+  products of a conversion) stay locked; if one of them is wrong, the record is deleted
+  and logged again. The "New" pages and the details pages share one validation function
+  per entity. Lesson: the AI's first idea reused existing code, but reusing it was more
+  complex than building a simpler page; ask how a suggestion works for the hardest case.
