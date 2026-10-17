@@ -83,7 +83,8 @@
   come from the design decisions made earlier in Milestone 1; anything that does not
   exist yet (the `.sql` file, `config.example.php`, test accounts, Swagger, the live
   link) is a placeholder that names the milestone that adds it.
-- **What I kept, changed or rejected:** _to fill in after I review the draft._
+- **What I kept, changed or rejected:** AI added too many unecessary things for now such as 
+how to run this app localy by yourself and stuff like that. I believe for now they are useless.
 
 ### Where the AI was wrong
 
