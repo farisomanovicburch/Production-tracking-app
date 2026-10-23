@@ -4,8 +4,14 @@
  * Author: amiletti. The repository has no licence file; it is used here because
  * the IT 2001 Web Programming course teaches it.
  *
- * Unmodified copy of assets/js/jquery.spapp.js. Changes made for this project
- * are listed here.
+ * Modified copy of assets/js/jquery.spapp.js. Changes made for this project:
+ * - routeChange takes the route name from the part of the hash before "?", so
+ *   "#run-detail?id=17" opens the "run-detail" view and the record id stays in
+ *   the address. The original used the whole hash, so jQuery threw a selector
+ *   error on "?" and the wrong page stayed visible.
+ * - routeChange marks the shown section with the class "spapp-active".
+ *   spapp.css shows sections by that class instead of :target, which can only
+ *   match a hash that is exactly a section id.
  */
 (function($) {
 
@@ -34,7 +40,7 @@
 
     // manage hash change
     var routeChange = function() {
-      var id    = location.hash.slice(1);
+      var id    = location.hash.slice(1).split('?')[0];
       var route = routes[id];
       var elm   = $("#"+id);
 
@@ -46,6 +52,10 @@
         console.log(id+" not defined");
         return;
       }
+      // Shown by class rather than CSS :target, which cannot match "#run-detail?id=17".
+      // Done before loading so the new view replaces the old one at once, even on a first visit.
+      $("main#spapp > section").removeClass("spapp-active");
+      elm.addClass("spapp-active");
 
       if(elm.hasClass("spapp-created")) {
         route.onReady();
