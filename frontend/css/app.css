@@ -134,3 +134,34 @@
 .pt-sidenav .nav-link.active .sb-nav-link-icon {
   color: #fff;
 }
+
+/* ---------- Pages (spapp sections) ---------- */
+
+/* Each section's id is also the address hash, so a page opened from a link,
+   bookmark or new tab can make the browser jump to its section. Whether it
+   does depends on the view arriving before the page finishes loading, so it
+   only happens sometimes; when it does, the jump lines the section up with
+   the top of the window, under the 56px fixed top bar. The section starts
+   at its heading, because the heading's 1.5rem (24px) top margin collapses
+   out of it, so stopping 56 + 24px early leaves the page exactly as it is
+   without a jump. */
+main#spapp > section {
+  scroll-margin-top: 80px;
+}
+
+/* ---------- Pages outside the app layout (login, register) ---------- */
+
+/* app.js puts pt-auth-page on <body> for these pages. Hiding the bars is not
+   enough on its own: the template keeps 56px free at the top and 225px on the
+   left for them, so those offsets are cancelled too. */
+body.pt-auth-page .sb-topnav,
+body.pt-auth-page #layoutSidenav_nav {
+  display: none;
+}
+
+body.pt-auth-page #layoutSidenav #layoutSidenav_content {
+  top: 0;
+  margin-left: 0;
+  padding-left: 0;
+  min-height: 100vh;
+}

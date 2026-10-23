@@ -1,3 +1,10 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 mb-4">Maintenance details</h1>
+    <div class="alert alert-warning d-none" data-record-missing>
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>This maintenance record does not exist.
+        <a class="alert-link" href="#maintenance">Back to the maintenance log</a>
+    </div>
+    <div data-record-content>
+        <p class="text-muted">Maintenance record #<span data-record-id></span></p>
+    </div>
 </div>

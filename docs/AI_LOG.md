@@ -108,6 +108,31 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   am the only person using the app, so they only added complexity. The language switch
   was removed from the top bar; I may add translations after the course.
 
+**6. Single-page navigation with spapp**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** make the frontend a single-page application with spapp, the jQuery router
+  from the course: add jQuery and spapp locally, split `index.html` into a shell and one
+  view file per page, pass a record id in the address for the details and setup pages,
+  show a "does not exist" message for a missing or invalid id, highlight the current
+  area in the sidebar, and show Login and Register without the top bar and sidebar.
+- **Main prompts:** "do you have the link i gave you earlier for the jquery spapp ... and
+  does it use AJAX under the hood", "make sure i understand it properly dont let me vibe
+  code it", and "In each message were only doing one step".
+- **What was generated:** a line-by-line explanation of spapp's source, five options for
+  passing a record id (a variable, `sessionStorage`, the address, modals, our own
+  router) with their effect on refresh, the back button and bookmarks, the view files,
+  the code in `js/app.js` and `css/app.css`, and browser test scripts run before and
+  after each change (kept outside the repository).
+- **What I kept, changed or rejected:** I chose to keep the id in the address
+  (`#run-detail?id=17`), because it is the only option where refresh, the back button
+  and bookmarks all show the right record. I read spapp's source myself and explained it
+  back before changing anything, and I typed the change to spapp myself: the route name
+  is the part of the address before `?`, and the visible page is marked with a class
+  instead of the CSS `:target` rule. I committed the original spapp first, so the next
+  commit shows exactly what I changed. When I commented out the old spapp CSS, the AI
+  pointed out that Git already keeps the original, so I deleted it instead. I dropped
+  the plan to trim the template's unused CSS.
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**
@@ -196,3 +221,19 @@ so no unstaged changes there.
   and logged again. The "New" pages and the details pages share one validation function
   per entity. Lesson: the AI's first idea reused existing code, but reusing it was more
   complex than building a simpler page; ask how a suggestion works for the hardest case.
+
+**8. A bug described as always happening when it only happens sometimes**
+- **What was wrong:** the AI reported that opening a long page straight from its address
+  (a bookmark, a new tab) always scrolls the page so its heading hides under the fixed
+  top bar, and that it happens whenever the page is taller than the window. In fact it
+  only happens sometimes: the browser jumps to the section named in the address only if
+  spapp has loaded that page before the browser finishes loading, which happened in 1
+  of 4 tries.
+- **How I noticed:** I tried to reproduce it on a phone-sized window in a new tab and
+  it did not happen, so I told the AI. It measured again and found the timing race.
+- **How I fixed it:** one CSS rule, `scroll-margin-top: 80px` on the page sections, makes
+  the jump, whenever it happens, stop where the page normally sits (56px top bar plus
+  the 24px space above each heading). The test performs the jump itself instead of
+  waiting for the race, so it fails without the rule every time. Lesson: reproduce a
+  reported bug myself before accepting it, and be suspicious of bugs that only one
+  person can see.
