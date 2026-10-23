@@ -145,6 +145,18 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   `css/app.css`, and browser tests written before the code.
 - **What I kept, changed or rejected:** kept everything
 
+**8. Admin pages**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** build Machines, Machine setup, Products, Materials (with "Add delivery"),
+  Recipes, Recipe setup and Users: list tables with Setup, Edit and Delete buttons, one
+  dialog per entity used for both Add and Edit, and small "Add" forms under the tables
+  on the setup pages.
+- **Main prompt:** "3b get to work".
+- **What was generated:** the seven views with generic sample data, the dialog and form
+  handlers in `js/app.js` (attached once to the whole document so they also serve
+  pages loaded later), and browser tests written before the code.
+- **What I kept, changed or rejected:** kept everything
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**

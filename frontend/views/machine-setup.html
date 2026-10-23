@@ -1,10 +1,118 @@
 <div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">Machine setup</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Machine setup</h1>
+        <a class="btn btn-outline-secondary" href="#machines"><i class="fa-solid fa-arrow-left me-1"></i>Machines</a>
+    </div>
     <div class="alert alert-warning d-none" data-record-missing>
         <i class="fa-solid fa-triangle-exclamation me-1"></i>This machine does not exist.
         <a class="alert-link" href="#machines">Back to machines</a>
     </div>
+    <!-- Sample machine until the API is connected; every id shows the same extruder. -->
     <div data-record-content>
-        <p class="text-muted">Machine #<span data-record-id></span></p>
+        <p class="text-muted mb-4">Machine #<span data-record-id></span> · <strong class="text-body">Extruder 1</strong> (EX-01) · <span class="badge text-bg-primary">Extrusion</span></p>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">Products</div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="ps-3">Product</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col" class="text-end pe-3"><span class="visually-hidden">Remove</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3">LDPE film, clear</td>
+                                    <td><span class="badge text-bg-success">Output</span></td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">LDPE film, white</td>
+                                    <td><span class="badge text-bg-success">Output</span></td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <form class="row g-2" id="productLinkForm" data-inline-add novalidate>
+                            <div class="col-sm-6">
+                                <label class="visually-hidden" for="productLinkProduct">Product</label>
+                                <select class="form-select" id="productLinkProduct" required>
+                                    <option value="">Product…</option>
+                                    <option value="1">LDPE film, clear</option>
+                                    <option value="2">LDPE film, white</option>
+                                    <option value="3">Carrier bag, white</option>
+                                    <option value="4">Waste bag 60 L</option>
+                                </select>
+                                <div class="invalid-feedback">Choose a product.</div>
+                            </div>
+                            <div class="col-7 col-sm-3">
+                                <label class="visually-hidden" for="productLinkRole">Role</label>
+                                <select class="form-select" id="productLinkRole" required>
+                                    <option value="output">Output</option>
+                                    <option value="input">Input</option>
+                                </select>
+                            </div>
+                            <div class="col-5 col-sm-3 d-grid">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">Parameters</div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="ps-3">Parameter</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="text-end pe-3"><span class="visually-hidden">Remove</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3">Zone 1 temperature</td>
+                                    <td>°C</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">Screw speed</td>
+                                    <td>rpm</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">Haul-off speed</td>
+                                    <td>m/min</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <form class="row g-2" id="parameterAddForm" data-inline-add novalidate>
+                            <div class="col-sm-6">
+                                <label class="visually-hidden" for="parameterName">Parameter name</label>
+                                <input class="form-control" id="parameterName" type="text" placeholder="Parameter name" maxlength="100" required>
+                                <div class="invalid-feedback">Enter a name.</div>
+                            </div>
+                            <div class="col-7 col-sm-3">
+                                <label class="visually-hidden" for="parameterUnit">Unit</label>
+                                <input class="form-control" id="parameterUnit" type="text" placeholder="Unit" maxlength="20">
+                            </div>
+                            <div class="col-5 col-sm-3 d-grid">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

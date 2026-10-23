@@ -57,11 +57,15 @@ function showRecordOrMissing(view) {
 // Bootstrap colours fields red or green only inside a form with the class
 // was-validated; novalidate on the form turns off the browser's own pop-ups,
 // so these styles are the only feedback.
+function validateForm(form) {
+    form.addClass('was-validated');
+    return form[0].checkValidity();
+}
+
 function bindValidatedForm(form, onValid) {
     form.on('submit', function (event) {
         event.preventDefault();
-        form.addClass('was-validated');
-        if (this.checkValidity()) {
+        if (validateForm(form)) {
             onValid();
         }
     });
@@ -82,6 +86,47 @@ function requireMatchingPasswords(password, confirmation) {
     password.on('input', compare);
     confirmation.on('input', compare);
 }
+
+// The handlers below sit on document instead of on each form ("event
+// delegation"): an event on a form bubbles up to document, where jQuery checks
+// whether it came from an element matching the selector. One handler then
+// serves every matching form, including forms in views spapp has not loaded yet.
+
+// Add and Edit open the same dialog. It starts empty each time, and takes its
+// title from the button that opened it (data-modal-title).
+$(document).on('show.bs.modal', '.modal', function (event) {
+    const modal = $(this);
+    const form = modal.find('form');
+    const title = $(event.relatedTarget).data('modal-title');
+
+    if (form.length) {
+        resetForm(form);
+    }
+    if (title) {
+        modal.find('.modal-title').text(title);
+    }
+});
+
+// Until the API exists (M4) a valid dialog has nothing to save it to, so it just closes.
+$(document).on('submit', '.modal form', function (event) {
+    event.preventDefault();
+    const form = $(this);
+
+    if (validateForm(form)) {
+        bootstrap.Modal.getInstance(form.closest('.modal')[0]).hide();
+    }
+});
+
+// The small "Add" forms under the tables on the setup pages: valid input is
+// cleared for the next entry (in M4 it is also added as a row).
+$(document).on('submit', 'form[data-inline-add]', function (event) {
+    event.preventDefault();
+    const form = $(this);
+
+    if (validateForm(form)) {
+        resetForm(form);
+    }
+});
 
 const app = $.spapp({
     defaultView: 'dashboard',
@@ -175,10 +220,20 @@ function toggleAuthLayout(view) {
     }
 }
 
+// A dialog lives inside its page, but Bootstrap puts the dark backdrop behind
+// it on <body>. Leaving the page with a dialog open (the Back button) would
+// hide the dialog along with its page and leave the backdrop over the next one.
+function closeOpenDialogs() {
+    $('.modal.show').each(function () {
+        bootstrap.Modal.getInstance(this).hide();
+    });
+}
+
 function updateShell() {
     const view = currentView();
     highlightSidebar(view);
     toggleAuthLayout(view);
+    closeOpenDialogs();
 }
 
 // spapp has no hook that runs on every page change, so the shell listens to
