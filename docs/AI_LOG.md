@@ -157,6 +157,20 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   pages loaded later), and browser tests written before the code.
 - **What I kept, changed or rejected:** kept everything
 
+**9. Runs, conversions, maintenance, profile and 404**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** build the remaining pages: lists with filters for runs, conversions and
+  maintenance; a four-step wizard for a new run with a recipe calculator; forms for a
+  new conversion (scrap shown as input minus output) and a new maintenance record;
+  details pages that open locked and unlock with Edit (Update and Cancel); the profile
+  page and the 404 page.
+- **Main prompt:** "Build 3c now. Since i dont have time i will not try to understand
+  anything ... i just need this 3c built so tommorow i can focus on understanding".
+- **What was generated:** eleven views with generic sample data, the wizard, calculator,
+  field-order checks and edit handlers in `js/app.js`, and browser tests written before
+  the code.
+- **What I kept, changed or rejected:** kept everything
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**

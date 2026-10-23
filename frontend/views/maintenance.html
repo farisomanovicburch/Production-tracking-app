@@ -1,3 +1,69 @@
 <div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">Maintenance log</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Maintenance log</h1>
+        <a class="btn btn-primary" href="#maintenance-new"><i class="fa-solid fa-circle-plus me-1"></i>Log maintenance</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-2 align-items-end" data-validate-only novalidate>
+                <div class="col-6 col-md-4">
+                    <label class="form-label small" for="maintenanceFilterMachine">Machine</label>
+                    <select class="form-select" id="maintenanceFilterMachine">
+                        <option value="">All</option>
+                        <option value="1">Extruder 1</option>
+                        <option value="2">Extruder 2</option>
+                        <option value="3">Bag machine 1</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-4">
+                    <label class="form-label small" for="maintenanceFilterType">Type</label>
+                    <select class="form-select" id="maintenanceFilterType">
+                        <option value="">All</option>
+                        <option value="preventive">Preventive</option>
+                        <option value="corrective">Corrective</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4 d-grid">
+                    <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-filter me-1"></i>Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sample rows until the API is connected. -->
+    <div class="card mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-3">Date</th>
+                        <th scope="col">Machine</th>
+                        <th scope="col" class="d-none d-sm-table-cell">Type</th>
+                        <th scope="col" class="d-none d-lg-table-cell">Work done</th>
+                        <th scope="col" class="d-none d-xl-table-cell">By</th>
+                        <th scope="col" class="text-end pe-3"><span class="visually-hidden">Open</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-3 text-nowrap">21.10.2026</td>
+                        <td>Extruder 2</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-danger">Corrective</span></td>
+                        <td class="d-none d-lg-table-cell">Replaced a heater band on zone 3</td>
+                        <td class="d-none d-xl-table-cell">Demo Admin</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#maintenance-detail?id=2">Open</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3 text-nowrap">15.10.2026</td>
+                        <td>Extruder 1</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-info">Preventive</span></td>
+                        <td class="d-none d-lg-table-cell">Gearbox oil change</td>
+                        <td class="d-none d-xl-table-cell">Demo Operator</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#maintenance-detail?id=1">Open</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

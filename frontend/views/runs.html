@@ -1,3 +1,97 @@
 <div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">Runs</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Runs</h1>
+        <a class="btn btn-primary" href="#run-new"><i class="fa-solid fa-circle-plus me-1"></i>New run</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-2 align-items-end" data-validate-only novalidate>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label class="form-label small" for="runsFilterFrom">From</label>
+                    <input class="form-control" id="runsFilterFrom" type="date">
+                </div>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label class="form-label small" for="runsFilterTo">To</label>
+                    <input class="form-control" id="runsFilterTo" type="date" data-not-before="#runsFilterFrom" data-order-message="The end date must not be before the start date.">
+                    <div class="invalid-feedback">Not before "From".</div>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label class="form-label small" for="runsFilterMachine">Machine</label>
+                    <select class="form-select" id="runsFilterMachine">
+                        <option value="">All</option>
+                        <option value="1">Extruder 1</option>
+                        <option value="2">Extruder 2</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label class="form-label small" for="runsFilterProduct">Product</label>
+                    <select class="form-select" id="runsFilterProduct">
+                        <option value="">All</option>
+                        <option value="1">LDPE film, clear</option>
+                        <option value="2">LDPE film, white</option>
+                    </select>
+                </div>
+                <div class="col-8 col-md-9 col-xl-3">
+                    <label class="form-label small" for="runsFilterSearch">Search notes</label>
+                    <input class="form-control" id="runsFilterSearch" type="search" placeholder="e.g. die change">
+                </div>
+                <div class="col-4 col-md-3 col-xl-1 d-grid">
+                    <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-filter"></i><span class="visually-hidden">Filter</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sample rows until the API is connected. -->
+    <div class="card mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-3">Date</th>
+                        <th scope="col">Machine</th>
+                        <th scope="col" class="d-none d-md-table-cell">Product</th>
+                        <th scope="col" class="d-none d-lg-table-cell">Recipe</th>
+                        <th scope="col" class="d-none d-sm-table-cell text-end">Output</th>
+                        <th scope="col" class="d-none d-lg-table-cell text-end">Scrap</th>
+                        <th scope="col" class="d-none d-xl-table-cell">Operator</th>
+                        <th scope="col" class="text-end pe-3"><span class="visually-hidden">Open</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-3 text-nowrap">22.10.2026</td>
+                        <td>Extruder 1</td>
+                        <td class="d-none d-md-table-cell">LDPE film, white</td>
+                        <td class="d-none d-lg-table-cell">White film</td>
+                        <td class="d-none d-sm-table-cell text-end text-nowrap">950 kg</td>
+                        <td class="d-none d-lg-table-cell text-end text-nowrap">50 kg</td>
+                        <td class="d-none d-xl-table-cell">Demo Operator</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#run-detail?id=3">Open</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3 text-nowrap">21.10.2026</td>
+                        <td>Extruder 2</td>
+                        <td class="d-none d-md-table-cell">LDPE film, clear</td>
+                        <td class="d-none d-lg-table-cell">Clear film</td>
+                        <td class="d-none d-sm-table-cell text-end text-nowrap">1180 kg</td>
+                        <td class="d-none d-lg-table-cell text-end text-nowrap">35 kg</td>
+                        <td class="d-none d-xl-table-cell">Demo Admin</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#run-detail?id=2">Open</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3 text-nowrap">20.10.2026</td>
+                        <td>Extruder 1</td>
+                        <td class="d-none d-md-table-cell">LDPE film, clear</td>
+                        <td class="d-none d-lg-table-cell">Clear film</td>
+                        <td class="d-none d-sm-table-cell text-end text-nowrap">870 kg</td>
+                        <td class="d-none d-lg-table-cell text-end text-nowrap">42 kg</td>
+                        <td class="d-none d-xl-table-cell">Demo Operator</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#run-detail?id=1">Open</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

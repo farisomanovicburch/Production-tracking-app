@@ -71,9 +71,14 @@ function bindValidatedForm(form, onValid) {
     });
 }
 
+// reset() puts every field back to the value written in the HTML. It does not
+// touch custom errors (setCustomValidity) or red outlines, so those are cleared too.
 function resetForm(form) {
     form[0].reset();
-    form.removeClass('was-validated');
+    form.find('.was-validated').addBack().removeClass('was-validated');
+    form.find('input, select, textarea').each(function () {
+        this.setCustomValidity('');
+    });
 }
 
 // HTML has no attribute for "must equal another field", so the confirmation
@@ -128,6 +133,144 @@ $(document).on('submit', 'form[data-inline-add]', function (event) {
     }
 });
 
+// Filter and profile forms only validate for now. Without preventDefault a
+// submit would reload the whole app; filtering and saving arrive with the API (M4).
+$(document).on('submit', 'form[data-validate-only]', function (event) {
+    event.preventDefault();
+    validateForm($(this));
+});
+
+// New run, conversion and maintenance: once valid, go back to the list the
+// record belongs to (data-after-save). In M4 the record is sent to the API first.
+$(document).on('submit', 'form[data-new-form]', function (event) {
+    event.preventDefault();
+    const form = $(this);
+
+    if (validateForm(form)) {
+        location.hash = form.data('after-save');
+    }
+});
+
+// ---------- Wizard (New run) ----------
+
+// Steps are fieldsets with data-wizard-step; only one is visible at a time.
+function showWizardStep(wizard, index) {
+    const steps = wizard.find('[data-wizard-step]');
+    const last = steps.length - 1;
+
+    steps.addClass('d-none').eq(index).removeClass('d-none');
+    wizard.data('step', index);
+    wizard.find('[data-wizard-back]').toggleClass('d-none', index === 0);
+    wizard.find('[data-wizard-next]').toggleClass('d-none', index === last);
+    wizard.find('[data-wizard-submit]').toggleClass('d-none', index !== last);
+    wizard.find('[data-wizard-progress] li').each(function (i) {
+        $(this).toggleClass('text-primary fw-semibold', i === index)
+            .toggleClass('text-success', i < index)
+            .attr('aria-current', i === index ? 'step' : null);
+    });
+}
+
+// Next checks only the fields of the current step, so an error is shown where
+// the user can see and fix it, not in a step that is hidden.
+$(document).on('click', '[data-wizard-next]', function () {
+    const wizard = $(this).closest('[data-wizard]');
+    const index = wizard.data('step') || 0;
+    const step = wizard.find('[data-wizard-step]').eq(index);
+    const fields = step.find('input, select, textarea').toArray();
+
+    step.addClass('was-validated');
+    if (fields.every(function (field) { return field.checkValidity(); })) {
+        showWizardStep(wizard, index + 1);
+    }
+});
+
+$(document).on('click', '[data-wizard-back]', function () {
+    const wizard = $(this).closest('[data-wizard]');
+    showWizardStep(wizard, (wizard.data('step') || 0) - 1);
+});
+
+// ---------- Calculated and compared fields ----------
+
+// Recipe calculator: each material's amount is its share (data-share, in %)
+// of the batch total. The operator can still overwrite what was really used.
+$(document).on('input', '[data-batch-total]', function () {
+    const total = Number($(this).val());
+
+    $(this).closest('form').find('[data-share]').each(function () {
+        $(this).val(total > 0 ? (total * $(this).data('share') / 100).toFixed(1) : '');
+    });
+});
+
+// A field with data-not-before="#otherField" may not be smaller than that
+// field: an end time before its start, a meter reading lower than the first
+// one, more output than input. Rechecked whenever anything in the form changes.
+function checkFieldOrder(form) {
+    form.find('[data-not-before]').each(function () {
+        const earlier = $($(this).data('not-before')).val();
+        const later = $(this).val();
+        const isNumber = this.type === 'number';
+        const tooSmall = earlier !== '' && later !== '' &&
+            (isNumber ? Number(later) < Number(earlier) : later < earlier);
+
+        this.setCustomValidity(tooSmall ? $(this).data('order-message') : '');
+    });
+}
+
+// Scrap is never stored (decided for the ERD): it is input minus output.
+function showScrap(form) {
+    form.find('[data-scrap-from]').each(function () {
+        const input = $($(this).data('scrap-from')).val();
+        const output = $($(this).data('scrap-minus')).val();
+
+        $(this).text(input !== '' && output !== '' ? (Number(input) - Number(output)).toFixed(1) + ' kg' : '—');
+    });
+}
+
+$(document).on('input change', 'form', function () {
+    checkFieldOrder($(this));
+    showScrap($(this));
+});
+
+// ---------- Details pages: view, Edit, Cancel, Update ----------
+
+// A saved record is shown locked. Edit unlocks the fieldset; fields that other
+// fields depend on (machine, products, recipe) are plain text outside it, so they
+// stay locked. Cancel puts back the saved values: reset() returns every field to
+// the value written in the HTML, which on these pages is the saved record.
+function setEditing(form, editing) {
+    form.find('fieldset[data-editable]').prop('disabled', !editing);
+    form.find('[data-edit-start]').toggleClass('d-none', editing);
+    form.find('[data-edit-actions]').toggleClass('d-none', !editing);
+}
+
+function lockEditForms(section) {
+    section.find('form[data-edit-form]').each(function () {
+        resetForm($(this));
+        setEditing($(this), false);
+    });
+}
+
+$(document).on('click', '[data-edit-start]', function () {
+    setEditing($(this).closest('form'), true);
+});
+
+$(document).on('click', '[data-edit-cancel]', function () {
+    const form = $(this).closest('form');
+    resetForm(form);
+    setEditing(form, false);
+});
+
+// Until the API exists (M4), a valid Update only locks the form again.
+$(document).on('submit', 'form[data-edit-form]', function (event) {
+    event.preventDefault();
+    const form = $(this);
+
+    if (validateForm(form)) {
+        form.removeClass('was-validated');
+        setEditing(form, false);
+    }
+});
+
 const app = $.spapp({
     defaultView: 'dashboard',
     templateDir: 'views/',
@@ -175,8 +318,37 @@ recordViews.forEach(function (view) {
         view: view,
         onReady: function () {
             showRecordOrMissing(view);
+            // Leaving a details page halfway through an edit must not leave
+            // it unlocked, or showing unsaved values, on the next visit.
+            lockEditForms($('#' + view));
         }
     });
+});
+
+// A New page starts empty on every visit, the wizard on its first step.
+['run-new', 'conversion-new', 'maintenance-new'].forEach(function (view) {
+    app.route({
+        view: view,
+        onReady: function () {
+            const section = $('#' + view);
+            section.find('form').each(function () {
+                resetForm($(this));
+            });
+            section.find('[data-wizard]').each(function () {
+                showWizardStep($(this), 0);
+            });
+            section.find('form').each(function () {
+                showScrap($(this));
+            });
+        }
+    });
+});
+
+app.route({
+    view: 'profile',
+    onCreate: function () {
+        requireMatchingPasswords($('#profileNewPassword'), $('#profileNewPasswordConfirm'));
+    }
 });
 
 app.run();

@@ -1,10 +1,142 @@
 <div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">Run details</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Run details</h1>
+        <a class="btn btn-outline-secondary" href="#runs"><i class="fa-solid fa-arrow-left me-1"></i>Runs</a>
+    </div>
     <div class="alert alert-warning d-none" data-record-missing>
         <i class="fa-solid fa-triangle-exclamation me-1"></i>This run does not exist.
         <a class="alert-link" href="#runs">Back to runs</a>
     </div>
+    <!-- Sample run until the API is connected; every id shows the same run.
+         The value attributes are the saved values that Cancel returns to. -->
     <div data-record-content>
-        <p class="text-muted">Run #<span data-record-id></span></p>
+        <form id="runDetailForm" data-edit-form novalidate>
+            <div class="card mb-4">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+                    <dl class="row mb-0 flex-grow-1">
+                        <dt class="col-5 col-md-3">Run</dt>
+                        <dd class="col-7 col-md-9">#<span data-record-id></span></dd>
+                        <dt class="col-5 col-md-3">Machine</dt>
+                        <dd class="col-7 col-md-9" data-identity>Extruder 1</dd>
+                        <dt class="col-5 col-md-3">Product</dt>
+                        <dd class="col-7 col-md-9" data-identity>LDPE film, white</dd>
+                        <dt class="col-5 col-md-3">Recipe</dt>
+                        <dd class="col-7 col-md-9" data-identity>White film</dd>
+                        <dt class="col-5 col-md-3">Logged by</dt>
+                        <dd class="col-7 col-md-9 mb-0">Demo Operator</dd>
+                    </dl>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary" data-edit-start><i class="fa-solid fa-pen me-1"></i>Edit</button>
+                        <button type="button" class="btn btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">Machine, product and recipe cannot be changed. If one of them is wrong, delete the run and log it again.</div>
+            </div>
+
+            <fieldset data-editable disabled>
+                <legend class="visually-hidden">Run values</legend>
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Time</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="runDetailDate">Date</label>
+                                    <input class="form-control" id="runDetailDate" type="date" value="2026-10-22" required>
+                                    <div class="invalid-feedback">Choose the date.</div>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label class="form-label" for="runDetailStart">Start</label>
+                                    <input class="form-control" id="runDetailStart" type="time" value="06:00" required>
+                                    <div class="invalid-feedback">Enter the start time.</div>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label class="form-label" for="runDetailEnd">End</label>
+                                    <input class="form-control" id="runDetailEnd" type="time" value="14:00" required>
+                                    <div class="invalid-feedback">Enter the end time.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">Machine parameters</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="runDetailParam1">Zone 1 temp. (°C)</label>
+                                    <input class="form-control" id="runDetailParam1" type="number" step="0.1" value="185" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="runDetailParam2">Screw speed (rpm)</label>
+                                    <input class="form-control" id="runDetailParam2" type="number" step="0.1" value="62" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="runDetailParam3">Haul-off (m/min)</label>
+                                    <input class="form-control" id="runDetailParam3" type="number" step="0.1" value="24.5" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Materials used</div>
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-3"><label for="runDetailMaterial1">LDPE granulate</label></td>
+                                            <td class="text-end pe-3"><div class="input-group input-group-sm ms-auto pt-amount"><input class="form-control text-end" id="runDetailMaterial1" type="number" min="0" step="0.1" value="940" required><span class="input-group-text">kg</span></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-3"><label for="runDetailMaterial2">White masterbatch</label></td>
+                                            <td class="text-end pe-3"><div class="input-group input-group-sm ms-auto pt-amount"><input class="form-control text-end" id="runDetailMaterial2" type="number" min="0" step="0.1" value="50" required><span class="input-group-text">kg</span></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ps-3"><label for="runDetailMaterial3">Slip additive</label></td>
+                                            <td class="text-end pe-3"><div class="input-group input-group-sm ms-auto pt-amount"><input class="form-control text-end" id="runDetailMaterial3" type="number" min="0" step="0.1" value="10" required><span class="input-group-text">kg</span></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">Output</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="runDetailOutputKg">Produced (kg)</label>
+                                    <input class="form-control" id="runDetailOutputKg" type="number" min="0" step="0.1" value="950" required>
+                                    <div class="invalid-feedback">Enter 0 or more.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="runDetailScrapKg">Scrap (kg)</label>
+                                    <input class="form-control" id="runDetailScrapKg" type="number" min="0" step="0.1" value="50" required>
+                                    <div class="invalid-feedback">Enter 0 or more.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="runDetailEnergyStart">Energy at start (kWh)</label>
+                                    <input class="form-control" id="runDetailEnergyStart" type="number" min="0" step="0.1" value="12000" required>
+                                    <div class="invalid-feedback">Enter the meter reading.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="runDetailEnergyEnd">Energy at end (kWh)</label>
+                                    <input class="form-control" id="runDetailEnergyEnd" type="number" min="0" step="0.1" value="12480" required data-not-before="#runDetailEnergyStart" data-order-message="The end reading must not be lower than the start reading.">
+                                    <div class="invalid-feedback">Not lower than the start reading.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="runDetailNotes">Notes</label>
+                                    <textarea class="form-control" id="runDetailNotes" rows="2" maxlength="1000">Stable run after the die change.</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="d-flex justify-content-end gap-2 mb-4 d-none" data-edit-actions>
+                <button type="button" class="btn btn-outline-secondary" data-edit-cancel>Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
     </div>
 </div>

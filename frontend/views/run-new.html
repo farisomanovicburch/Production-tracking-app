@@ -1,3 +1,181 @@
 <div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">New run</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">New run</h1>
+        <a class="btn btn-outline-secondary" href="#runs"><i class="fa-solid fa-arrow-left me-1"></i>Runs</a>
+    </div>
+
+    <!-- Sample machines, products and recipe until the API is connected. -->
+    <form class="card mb-4" id="runNewForm" data-wizard data-new-form data-after-save="runs" novalidate>
+        <div class="card-header">
+            <ol class="list-inline mb-0 small" data-wizard-progress>
+                <li class="list-inline-item me-3">1. Basics</li>
+                <li class="list-inline-item me-3">2. Recipe</li>
+                <li class="list-inline-item me-3">3. Parameters</li>
+                <li class="list-inline-item">4. Output</li>
+            </ol>
+        </div>
+        <div class="card-body">
+            <fieldset data-wizard-step>
+                <legend class="fs-5 mb-3">Basics</legend>
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <label class="form-label" for="runNewDate">Date</label>
+                        <input class="form-control" id="runNewDate" type="date" required>
+                        <div class="invalid-feedback">Choose the date.</div>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <label class="form-label" for="runNewStart">Start</label>
+                        <input class="form-control" id="runNewStart" type="time" required>
+                        <div class="invalid-feedback">Enter the start time.</div>
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <label class="form-label" for="runNewEnd">End</label>
+                        <input class="form-control" id="runNewEnd" type="time" required>
+                        <div class="invalid-feedback">Enter the end time.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewMachine">Machine</label>
+                        <select class="form-select" id="runNewMachine" required>
+                            <option value="">Choose…</option>
+                            <option value="1">Extruder 1</option>
+                            <option value="2">Extruder 2</option>
+                        </select>
+                        <div class="invalid-feedback">Choose the extruder.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewProduct">Product</label>
+                        <select class="form-select" id="runNewProduct" required>
+                            <option value="">Choose…</option>
+                            <option value="1">LDPE film, clear</option>
+                            <option value="2">LDPE film, white</option>
+                        </select>
+                        <div class="invalid-feedback">Choose what was made.</div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="d-none" data-wizard-step>
+                <legend class="fs-5 mb-3">Recipe and materials</legend>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewRecipe">Recipe</label>
+                        <select class="form-select" id="runNewRecipe" required>
+                            <option value="">Choose…</option>
+                            <option value="1">Clear film</option>
+                            <option value="2">White film</option>
+                        </select>
+                        <div class="invalid-feedback">Choose the recipe.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewBatchTotal">Batch total</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="runNewBatchTotal" type="number" min="0.1" step="0.1" required data-batch-total>
+                            <span class="input-group-text">kg</span>
+                            <div class="invalid-feedback">Enter the total mixed, above 0.</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-muted small">Amounts are calculated from the recipe's shares; change them if the real amount differed.</p>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Material</th>
+                                <th scope="col" class="text-end">Share</th>
+                                <th scope="col" class="text-end">Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><label for="runNewMaterial1">LDPE granulate</label></td>
+                                <td class="text-end">94 %</td>
+                                <td class="text-end"><input class="form-control form-control-sm text-end ms-auto pt-amount" id="runNewMaterial1" type="number" min="0" step="0.1" required data-share="94"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="runNewMaterial2">White masterbatch</label></td>
+                                <td class="text-end">5 %</td>
+                                <td class="text-end"><input class="form-control form-control-sm text-end ms-auto pt-amount" id="runNewMaterial2" type="number" min="0" step="0.1" required data-share="5"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="runNewMaterial3">Slip additive</label></td>
+                                <td class="text-end">1 %</td>
+                                <td class="text-end"><input class="form-control form-control-sm text-end ms-auto pt-amount" id="runNewMaterial3" type="number" min="0" step="0.1" required data-share="1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+
+            <fieldset class="d-none" data-wizard-step>
+                <legend class="fs-5 mb-3">Machine parameters</legend>
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <label class="form-label" for="runNewParam1">Zone 1 temperature (°C)</label>
+                        <input class="form-control" id="runNewParam1" type="number" step="0.1" required>
+                        <div class="invalid-feedback">Enter the value.</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label" for="runNewParam2">Screw speed (rpm)</label>
+                        <input class="form-control" id="runNewParam2" type="number" step="0.1" required>
+                        <div class="invalid-feedback">Enter the value.</div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label" for="runNewParam3">Haul-off speed (m/min)</label>
+                        <input class="form-control" id="runNewParam3" type="number" step="0.1" required>
+                        <div class="invalid-feedback">Enter the value.</div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="d-none" data-wizard-step>
+                <legend class="fs-5 mb-3">Output</legend>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewOutputKg">Produced</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="runNewOutputKg" type="number" min="0" step="0.1" required>
+                            <span class="input-group-text">kg</span>
+                            <div class="invalid-feedback">Enter 0 or more.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewScrapKg">Scrap</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="runNewScrapKg" type="number" min="0" step="0.1" required>
+                            <span class="input-group-text">kg</span>
+                            <div class="invalid-feedback">Enter 0 or more.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewEnergyStart">Energy meter at start</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="runNewEnergyStart" type="number" min="0" step="0.1" required>
+                            <span class="input-group-text">kWh</span>
+                            <div class="invalid-feedback">Enter the meter reading.</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="runNewEnergyEnd">Energy meter at end</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="runNewEnergyEnd" type="number" min="0" step="0.1" required data-not-before="#runNewEnergyStart" data-order-message="The end reading must not be lower than the start reading.">
+                            <span class="input-group-text">kWh</span>
+                            <div class="invalid-feedback">Not lower than the start reading.</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="runNewNotes">Notes <span class="text-muted">(optional)</span></label>
+                        <textarea class="form-control" id="runNewNotes" rows="2" maxlength="1000"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="small text-muted">Logged by Demo Admin</span>
+            <div class="d-flex gap-2 ms-auto">
+                <button type="button" class="btn btn-outline-secondary d-none" data-wizard-back>Back</button>
+                <button type="button" class="btn btn-primary" data-wizard-next>Next</button>
+                <button type="submit" class="btn btn-primary d-none" data-wizard-submit>Save run</button>
+            </div>
+        </div>
+    </form>
 </div>

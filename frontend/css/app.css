@@ -149,6 +149,12 @@ main#spapp > section {
   scroll-margin-top: 80px;
 }
 
+/* Amount fields inside table cells (materials used in a run): wide enough for
+   "1234.5", narrow enough that the material name keeps the room on a phone. */
+.pt-amount {
+  max-width: 8rem;
+}
+
 /* ---------- Pages outside the app layout (login, register) ---------- */
 
 /* app.js puts pt-auth-page on <body> for these pages. Hiding the bars is not

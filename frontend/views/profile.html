@@ -1,3 +1,52 @@
 <div class="container-fluid px-4">
     <h1 class="mt-4 mb-4">Profile</h1>
+    <!-- Sample user until login exists (M4): the profile is always the logged-in user. -->
+    <div class="row">
+        <div class="col-lg-6">
+            <form class="card mb-4" id="profileDetailsForm" data-validate-only novalidate>
+                <div class="card-header">Your details</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="profileName">Full name</label>
+                        <input class="form-control" id="profileName" type="text" value="Demo Admin" autocomplete="name" maxlength="100" required>
+                        <div class="invalid-feedback">Enter your name.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="profileEmail">Email</label>
+                        <input class="form-control" id="profileEmail" type="email" value="admin@example.com" autocomplete="email" required>
+                        <div class="invalid-feedback">Enter a valid email address.</div>
+                    </div>
+                    <p class="small text-muted mb-0">Role: <span class="badge text-bg-primary">Admin</span> (only an admin can change roles, on the Users page)</p>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-primary">Save details</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-6">
+            <form class="card mb-4" id="profilePasswordForm" data-inline-add novalidate>
+                <div class="card-header">Change password</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="profileCurrentPassword">Current password</label>
+                        <input class="form-control" id="profileCurrentPassword" type="password" autocomplete="current-password" required>
+                        <div class="invalid-feedback">Enter your current password.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="profileNewPassword">New password (at least 8 characters)</label>
+                        <input class="form-control" id="profileNewPassword" type="password" autocomplete="new-password" minlength="8" required>
+                        <div class="invalid-feedback">Use at least 8 characters.</div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="profileNewPasswordConfirm">Repeat new password</label>
+                        <input class="form-control" id="profileNewPasswordConfirm" type="password" autocomplete="new-password" required>
+                        <div class="invalid-feedback">Type the same password again.</div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-primary">Change password</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
