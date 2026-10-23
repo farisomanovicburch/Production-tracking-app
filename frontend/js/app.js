@@ -27,4 +27,15 @@ function startDashboardClock() {
     dashboardClockTimer = setInterval(render, 1000);
 }
 
-startDashboardClock();
+const app = $.spapp({
+    defaultView: 'dashboard',
+    templateDir: 'views/',
+    pageNotFound: 'not-found'
+});
+
+app.route({
+    view: 'dashboard',
+    onReady: startDashboardClock
+});
+
+app.run();

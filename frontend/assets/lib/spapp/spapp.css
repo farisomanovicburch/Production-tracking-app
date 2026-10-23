@@ -1,0 +1,14 @@
+/*!
+ * spapp - simple single page jQuery application library
+ * Source: https://github.com/amiletti/spapp (master branch, last updated 2024-03-06)
+ * Author: amiletti. The repository has no licence file; it is used here because
+ * the IT 2001 Web Programming course teaches it.
+ *
+ * Unmodified copy of assets/css/spapp.css. Changes made for this project are
+ * listed here.
+ */
+main#spapp > section { display: none; }
+main#spapp > section:last-child { display: block; } 
+@keyframes appear { from { width:0; opacity:0; } to { width:100%; opacity:1; } } 
+main#spapp > section:target { display: block; animation: appear 0.1s linear 1; } 
+main#spapp > section:target ~ * { display: none; }
