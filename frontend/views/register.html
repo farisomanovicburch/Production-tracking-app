@@ -1,3 +1,41 @@
-<div class="container-fluid px-4">
-    <h1 class="mt-4 mb-4">Register</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-7 col-lg-5 col-xl-4">
+            <div class="text-center text-white mb-4">
+                <i class="fa-solid fa-industry fa-2x mb-2"></i>
+                <div class="fs-4 fw-semibold">Production Tracker</div>
+            </div>
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h1 class="h3 text-center mb-4">Register</h1>
+                    <form id="registerForm" novalidate>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="registerName" type="text" placeholder="Full name" autocomplete="name" required>
+                            <label for="registerName">Full name</label>
+                            <div class="invalid-feedback">Enter your name.</div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="registerEmail" type="email" placeholder="Email" autocomplete="email" required>
+                            <label for="registerEmail">Email</label>
+                            <div class="invalid-feedback">Enter a valid email address.</div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" id="registerPassword" type="password" placeholder="Password" autocomplete="new-password" minlength="8" required>
+                            <label for="registerPassword">Password (at least 8 characters)</label>
+                            <div class="invalid-feedback">Use at least 8 characters.</div>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input class="form-control" id="registerPasswordConfirm" type="password" placeholder="Repeat password" autocomplete="new-password" required>
+                            <label for="registerPasswordConfirm">Repeat password</label>
+                            <div class="invalid-feedback">Type the same password again.</div>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Create account</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center small py-3">
+                    Already have an account? <a href="#login">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -54,6 +54,35 @@ function showRecordOrMissing(view) {
     section.find('[data-record-id]').text(id);
 }
 
+// Bootstrap colours fields red or green only inside a form with the class
+// was-validated; novalidate on the form turns off the browser's own pop-ups,
+// so these styles are the only feedback.
+function bindValidatedForm(form, onValid) {
+    form.on('submit', function (event) {
+        event.preventDefault();
+        form.addClass('was-validated');
+        if (this.checkValidity()) {
+            onValid();
+        }
+    });
+}
+
+function resetForm(form) {
+    form[0].reset();
+    form.removeClass('was-validated');
+}
+
+// HTML has no attribute for "must equal another field", so the confirmation
+// field is marked invalid by hand whenever either password changes.
+function requireMatchingPasswords(password, confirmation) {
+    function compare() {
+        const matches = confirmation.val() === password.val();
+        confirmation[0].setCustomValidity(matches ? '' : 'Type the same password again.');
+    }
+    password.on('input', compare);
+    confirmation.on('input', compare);
+}
+
 const app = $.spapp({
     defaultView: 'dashboard',
     templateDir: 'views/',
@@ -63,6 +92,36 @@ const app = $.spapp({
 app.route({
     view: 'dashboard',
     onReady: startDashboardClock
+});
+
+// Handlers are attached in onCreate, which runs once per view. In onReady,
+// which runs on every visit, each visit would add another handler and one
+// click would submit the form several times. The form is cleared on every
+// visit instead, so Logout never shows the previous user's email.
+// Until the backend exists (M4), a valid form only moves to the next page.
+app.route({
+    view: 'login',
+    onCreate: function () {
+        bindValidatedForm($('#loginForm'), function () {
+            location.hash = 'dashboard';
+        });
+    },
+    onReady: function () {
+        resetForm($('#loginForm'));
+    }
+});
+
+app.route({
+    view: 'register',
+    onCreate: function () {
+        requireMatchingPasswords($('#registerPassword'), $('#registerPasswordConfirm'));
+        bindValidatedForm($('#registerForm'), function () {
+            location.hash = 'login';
+        });
+    },
+    onReady: function () {
+        resetForm($('#registerForm'));
+    }
 });
 
 const recordViews = ['run-detail', 'conversion-detail', 'maintenance-detail', 'machine-setup', 'recipe-setup'];

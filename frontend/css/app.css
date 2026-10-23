@@ -165,3 +165,9 @@ body.pt-auth-page #layoutSidenav #layoutSidenav_content {
   padding-left: 0;
   min-height: 100vh;
 }
+
+/* With the top bar gone, the brand colour moves to the page itself, so the
+   white login card still sits in the app's own colours. */
+body.pt-auth-page {
+  background-color: var(--pt-nav-bg);
+}

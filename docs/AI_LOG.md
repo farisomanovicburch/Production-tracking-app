@@ -133,6 +133,18 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   pointed out that Git already keeps the original, so I deleted it instead. I dropped
   the plan to trim the template's unused CSS.
 
+**7. Login and Register pages**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** build the Login and Register pages: a card centred on the app's brand
+  colour (these pages have no top bar), forms with Bootstrap's validation styles, and a
+  check that both passwords match. Until the backend exists, a valid form only moves to
+  the next page.
+- **Main prompt:** "I have commited start working on 3a".
+- **What was generated:** both views, the form helpers in `js/app.js` (validation,
+  clearing a form on every visit, matching passwords), the background colour in
+  `css/app.css`, and browser tests written before the code.
+- **What I kept, changed or rejected:** kept everything
+
 ### Where the AI was wrong
 
 **1. Two folders called `views`**
