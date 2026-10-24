@@ -6,8 +6,9 @@
 
 **1. Planning Milestone 1**
 - **Tool:** Claude Code (Claude desktop app, Code tab), model Claude Opus 5.5.
-- **Task:** read the course requirements PDF and my old app (read-only, for domain
-  knowledge and lessons, not code); list what Milestone 1 needs; make the design
+- **Task:** read the course requirements PDF and my old app
+  ([Production-Tracking-App](https://github.com/farisomanovic/Production-Tracking-App),
+  read-only, for domain knowledge and lessons, not code); list what Milestone 1 needs; make the design
   decisions the ERD depends on; set up the folder structure, `.gitignore` and the
   one-branch-per-milestone rules in CLAUDE.md.
 - **Main prompt:** "List me the things i should do for milestone one. And how we should
@@ -83,8 +84,11 @@
   come from the design decisions made earlier in Milestone 1; anything that does not
   exist yet (the `.sql` file, `config.example.php`, test accounts, Swagger, the live
   link) is a placeholder that names the milestone that adds it.
-- **What I kept, changed or rejected:** AI added too many unecessary things for now such as 
-how to run this app localy by yourself and stuff like that. I believe for now they are useless.
+- **What I kept, changed or rejected:** I kept the description, the entities, the roles
+  and the external API section. I removed the sections on running the app with the
+  database, the test accounts, Swagger and the live link for now, because none of those
+  exist yet; each one is added in the milestone that creates it (2, 3 and 5), since the
+  final README has to contain them.
 
 **5. Final page list**
 - **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
@@ -104,7 +108,10 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   page, because I do not need a delivery history. The AI suggested correcting a
   finished job by opening the "New" form filled in with its values; I rejected that as
   too complex and chose an Edit button on the details page that unlocks its fields and
-  shows an Update button. I also dropped the EN/BS translations planned in entry 3: I
+  shows an Update button. I took the AI's suggestion that the sidebar lists only areas,
+  not actions: "New run" was removed from it, and new records are created from the
+  dashboard or the "New" button on each list page. That also lets every page highlight
+  the area it belongs to. I also dropped the EN/BS translations planned in entry 3: I
   am the only person using the app, so they only added complexity. The language switch
   was removed from the top bar; I may add translations after the course.
 
@@ -143,7 +150,7 @@ how to run this app localy by yourself and stuff like that. I believe for now th
 - **What was generated:** both views, the form helpers in `js/app.js` (validation,
   clearing a form on every visit, matching passwords), the background colour in
   `css/app.css`, and browser tests written before the code.
-- **What I kept, changed or rejected:** kept everything
+- **What I kept, changed or rejected:** I kept everything.
 
 **8. Admin pages**
 - **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
@@ -155,7 +162,7 @@ how to run this app localy by yourself and stuff like that. I believe for now th
 - **What was generated:** the seven views with generic sample data, the dialog and form
   handlers in `js/app.js` (attached once to the whole document so they also serve
   pages loaded later), and browser tests written before the code.
-- **What I kept, changed or rejected:** kept everything
+- **What I kept, changed or rejected:** I kept everything.
 
 **9. Runs, conversions, maintenance, profile and 404**
 - **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
@@ -169,7 +176,28 @@ how to run this app localy by yourself and stuff like that. I believe for now th
 - **What was generated:** eleven views with generic sample data, the wizard, calculator,
   field-order checks and edit handlers in `js/app.js`, and browser tests written before
   the code.
-- **What I kept, changed or rejected:** kept everything
+- **What I kept, changed or rejected:** I kept everything.
+
+**10. Draft ERD**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** turn the design decisions, my old app's schema and the fields on the new
+  pages into a list of tables, columns and relationships, and draw it as the Milestone 1
+  ERD.
+- **Main prompt:** "list all the tables, their individual collumns and all the
+  relationship ... would you be able to generate a picture as ERD", sent with "Take a
+  deep look at the old project and all the new incoming changes. Feel free to suggest
+  some ideas or changes."
+- **What was generated:** a proposal of 14 tables with columns, keys and checks, the
+  relationships, the rules only the backend can enforce, six questions for me, and after
+  my answers `docs/erd.md` (a Mermaid diagram GitHub draws itself) with SVG and PNG
+  exports.
+- **What I kept, changed or rejected:** I kept the proposal and answered its questions:
+  I kept the table that links recipes to products (the New run form does not use it
+  yet), kept the warm-up and "stable" times and the net and gross weight per unit from
+  my old app, added the product length, and chose date-and-time columns for when a run
+  starts and ends. I removed the energy meter readings, which I do not need. Operators
+  see all runs, because they often need older runs as a reference. The pages still have
+  to be brought in line with these changes after Milestone 1.
 
 ### Where the AI was wrong
 
@@ -190,8 +218,8 @@ how to run this app localy by yourself and stuff like that. I believe for now th
   Composer. With no slash at the start, it matches every folder named `vendor` at any
   depth, so Git silently ignored the template. The page looked fine on my machine, but
   a fresh clone (what the reviewer gets) would have been unstyled.
-- **How I noticed:** seeing in the git extension that files in vendor were not tracked
-so no unstaged changes there.
+- **How I noticed:** the git extension showed no changes for the files in `vendor`, so
+  Git was not tracking them.
 - **How I fixed it:** I chose to move the files to `frontend/assets/lib/` and keep
   `.gitignore` unchanged. Lesson: after adding files, check that `git status` lists them.
 
@@ -202,7 +230,7 @@ so no unstaged changes there.
   libraries themselves ask for: Bootstrap's licence page lists one requirement, keeping
   the copyright and licence notice in its CSS and JS files, and Font Awesome's
   `LICENSE.txt` says the comments already in its files are enough attribution.
-- **How I noticed:** i made the AI check Bootstrap's licence page and Font Awesome's
+- **How I noticed:** I made the AI check Bootstrap's licence page and Font Awesome's
   `LICENSE.txt` before answering whether Bootstrap's licence file was really needed.
 - **How I fixed it:** I removed the separate licence file and kept the minimum: the
   unmodified licence header at the top of every library file. Lesson: check what a
