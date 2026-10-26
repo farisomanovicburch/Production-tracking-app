@@ -1,0 +1,57 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">New maintenance</h1>
+        <a class="btn btn-outline-secondary" href="#maintenance"><i class="fa-solid fa-arrow-left me-1"></i>Maintenance log</a>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8">
+            <form class="card mb-4" id="maintenanceNewForm" data-new-form data-after-save="maintenance" novalidate>
+                <div class="card-body row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label" for="maintenanceNewMachine">Machine</label>
+                        <select class="form-select" id="maintenanceNewMachine" required>
+                            <option value="">Choose…</option>
+                            <option value="1">Extruder 1</option>
+                            <option value="2">Extruder 2</option>
+                            <option value="3">Bag machine 1</option>
+                        </select>
+                        <div class="invalid-feedback">Choose the machine.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="maintenanceNewType">Type</label>
+                        <select class="form-select" id="maintenanceNewType" required>
+                            <option value="">Choose…</option>
+                            <option value="preventive">Preventive (planned)</option>
+                            <option value="corrective">Corrective (a fault)</option>
+                        </select>
+                        <div class="invalid-feedback">Choose the type.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="maintenanceNewStart">Started</label>
+                        <input class="form-control" id="maintenanceNewStart" type="datetime-local" required>
+                        <div class="invalid-feedback">Enter when the work started.</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label" for="maintenanceNewEnd">Finished</label>
+                        <input class="form-control" id="maintenanceNewEnd" type="datetime-local" required data-not-before="#maintenanceNewStart" data-order-message="The work cannot finish before it started.">
+                        <div class="invalid-feedback">Not before the start.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="maintenanceNewDescription">Work done</label>
+                        <textarea class="form-control" id="maintenanceNewDescription" rows="3" maxlength="1000" required></textarea>
+                        <div class="invalid-feedback">Describe the work.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="maintenanceNewNotes">Notes and spare parts <span class="text-muted">(optional)</span></label>
+                        <textarea class="form-control" id="maintenanceNewNotes" rows="2" maxlength="1000"></textarea>
+                    </div>
+                </div>
+                <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="small text-muted">Logged by Demo Admin</span>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

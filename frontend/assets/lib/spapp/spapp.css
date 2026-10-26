@@ -1,0 +1,15 @@
+/*!
+ * spapp - simple single page jQuery application library
+ * Source: https://github.com/amiletti/spapp (master branch, last updated 2024-03-06)
+ * Author: amiletti. The repository has no licence file; it is used here because
+ * the IT 2001 Web Programming course teaches it.
+ *
+ * Modified copy of assets/css/spapp.css. Changes made for this project:
+ * - A section is shown when jquery.spapp.js gives it the class "spapp-active",
+ *   instead of by :target. :target only matches a hash that is exactly a
+ *   section id, so it failed on addresses like "#run-detail?id=17".
+ * - The :target slide-in animation and the "last section is visible by
+ *   default" rule were removed with it.
+ */
+main#spapp > section { display: none; }
+main#spapp > section.spapp-active { display: block; }

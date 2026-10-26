@@ -1,0 +1,120 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">New conversion</h1>
+        <a class="btn btn-outline-secondary" href="#conversions"><i class="fa-solid fa-arrow-left me-1"></i>Conversions</a>
+    </div>
+
+    <!-- Sample machines, products and parameters until the API is connected. -->
+    <form id="conversionNewForm" data-new-form data-after-save="conversions" novalidate>
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">Job</div>
+                    <div class="card-body row g-3">
+                        <div class="col-sm-4">
+                            <label class="form-label" for="conversionNewDate">Date</label>
+                            <input class="form-control" id="conversionNewDate" type="date" required>
+                            <div class="invalid-feedback">Choose the date.</div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <label class="form-label" for="conversionNewStart">Start</label>
+                            <input class="form-control" id="conversionNewStart" type="time" required>
+                            <div class="invalid-feedback">Enter the start time.</div>
+                        </div>
+                        <div class="col-6 col-sm-4">
+                            <label class="form-label" for="conversionNewEnd">End</label>
+                            <input class="form-control" id="conversionNewEnd" type="time" required>
+                            <div class="invalid-feedback">Enter the end time.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="conversionNewMachine">Machine</label>
+                            <select class="form-select" id="conversionNewMachine" required>
+                                <option value="">Choose…</option>
+                                <option value="3">Bag machine 1</option>
+                            </select>
+                            <div class="invalid-feedback">Choose the bag machine.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">Machine parameters</div>
+                    <div class="card-body row g-3">
+                        <div class="col-sm-4">
+                            <label class="form-label" for="conversionNewParam1">Weld time (s)</label>
+                            <input class="form-control" id="conversionNewParam1" type="number" min="0" step="0.01" required data-parameter>
+                            <div class="invalid-feedback">Enter the value.</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="conversionNewParam2">Cooling time (s)</label>
+                            <input class="form-control" id="conversionNewParam2" type="number" min="0" step="0.01" required data-parameter>
+                            <div class="invalid-feedback">Enter the value.</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="conversionNewParam3">Speed (bags/min)</label>
+                            <input class="form-control" id="conversionNewParam3" type="number" min="0" step="1" required data-parameter>
+                            <div class="invalid-feedback">Enter the value.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">Input and output</div>
+                    <div class="card-body row g-3">
+                        <div class="col-sm-7">
+                            <label class="form-label" for="conversionNewInputProduct">Input product</label>
+                            <select class="form-select" id="conversionNewInputProduct" required>
+                                <option value="">Choose…</option>
+                                <option value="1">LDPE film, clear</option>
+                                <option value="2">LDPE film, white</option>
+                            </select>
+                            <div class="invalid-feedback">Choose the film used.</div>
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="form-label" for="conversionNewInputKg">Input</label>
+                            <div class="input-group has-validation">
+                                <input class="form-control" id="conversionNewInputKg" type="number" min="0.1" step="0.1" required data-not-before="#conversionNewOutputKg" data-order-message="The input must be at least the output.">
+                                <span class="input-group-text">kg</span>
+                                <div class="invalid-feedback">Above 0, and at least the output.</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <label class="form-label" for="conversionNewOutputProduct">Output product</label>
+                            <select class="form-select" id="conversionNewOutputProduct" required>
+                                <option value="">Choose…</option>
+                                <option value="3">Carrier bag, white</option>
+                                <option value="4">Waste bag 60 L</option>
+                            </select>
+                            <div class="invalid-feedback">Choose the bags made.</div>
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="form-label" for="conversionNewOutputKg">Output</label>
+                            <div class="input-group has-validation">
+                                <input class="form-control" id="conversionNewOutputKg" type="number" min="0" step="0.1" required>
+                                <span class="input-group-text">kg</span>
+                                <div class="invalid-feedback">Enter 0 or more.</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <label class="form-label" for="conversionNewBags">Number of bags</label>
+                            <input class="form-control" id="conversionNewBags" type="number" min="0" step="1" required>
+                            <div class="invalid-feedback">Enter a whole number.</div>
+                        </div>
+                        <div class="col-sm-5">
+                            <span class="form-label d-block">Scrap</span>
+                            <output class="form-control-plaintext fw-semibold" data-scrap-from="#conversionNewInputKg" data-scrap-minus="#conversionNewOutputKg">—</output>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="conversionNewNotes">Notes <span class="text-muted">(optional)</span></label>
+                            <textarea class="form-control" id="conversionNewNotes" rows="2" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <span class="small text-muted">Logged by Demo Admin</span>
+            <button type="submit" class="btn btn-primary">Save conversion</button>
+        </div>
+    </form>
+</div>

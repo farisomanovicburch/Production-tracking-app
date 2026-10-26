@@ -1,0 +1,83 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Recipe setup</h1>
+        <a class="btn btn-outline-secondary" href="#recipes"><i class="fa-solid fa-arrow-left me-1"></i>Recipes</a>
+    </div>
+    <div class="alert alert-warning d-none" data-record-missing>
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>This recipe does not exist.
+        <a class="alert-link" href="#recipes">Back to recipes</a>
+    </div>
+    <!-- Sample recipe until the API is connected; every id shows the same recipe. -->
+    <div data-record-content>
+        <p class="text-muted mb-4">Recipe #<span data-record-id></span> · <strong class="text-body">White film</strong></p>
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card mb-4">
+                    <div class="card-header">Materials</div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="ps-3">Material</th>
+                                    <th scope="col" class="text-end">Share</th>
+                                    <th scope="col" class="text-end pe-3"><span class="visually-hidden">Remove</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3">LDPE granulate</td>
+                                    <td class="text-end">94 %</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">White masterbatch</td>
+                                    <td class="text-end">5 %</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3">Slip additive</td>
+                                    <td class="text-end">1 %</td>
+                                    <td class="text-end pe-3"><button type="button" class="btn btn-sm btn-outline-danger" aria-label="Remove"><i class="fa-solid fa-xmark"></i></button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-semibold">
+                                    <td class="ps-3">Total</td>
+                                    <td class="text-end">100 %</td>
+                                    <td class="text-end pe-3"><span class="badge text-bg-success">Complete</span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <form class="row g-2" id="recipeItemAddForm" data-inline-add novalidate>
+                            <div class="col-sm-6">
+                                <label class="visually-hidden" for="recipeItemMaterial">Material</label>
+                                <select class="form-select" id="recipeItemMaterial" required>
+                                    <option value="">Material…</option>
+                                    <option value="1">LDPE granulate</option>
+                                    <option value="2">HDPE granulate</option>
+                                    <option value="3">White masterbatch</option>
+                                    <option value="4">Black masterbatch</option>
+                                    <option value="5">Slip additive</option>
+                                </select>
+                                <div class="invalid-feedback">Choose a material.</div>
+                            </div>
+                            <div class="col-7 col-sm-3">
+                                <label class="visually-hidden" for="recipeItemShare">Share in percent</label>
+                                <div class="input-group has-validation">
+                                    <input class="form-control" id="recipeItemShare" type="number" placeholder="Share" min="0.1" max="100" step="0.1" required>
+                                    <span class="input-group-text">%</span>
+                                    <div class="invalid-feedback">Use 0.1 to 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-5 col-sm-3 d-grid">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

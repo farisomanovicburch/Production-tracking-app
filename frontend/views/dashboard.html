@@ -1,0 +1,126 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Dashboard</h1>
+        <div class="fs-5 text-muted">
+            <i class="fa-solid fa-clock me-1"></i><time id="dashboardClock"></time>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">Quick actions</div>
+        <div class="card-body">
+            <div class="row row-cols-1 row-cols-sm-3 g-2">
+                <div class="col">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary" href="#run-new"><i class="fa-solid fa-circle-plus me-1"></i>New run</a>
+                        <a class="btn btn-outline-primary" href="#runs"><i class="fa-solid fa-list-check me-1"></i>Runs</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary" href="#conversion-new"><i class="fa-solid fa-circle-plus me-1"></i>Log conversion</a>
+                        <a class="btn btn-outline-primary" href="#conversions"><i class="fa-solid fa-scissors me-1"></i>Conversions</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary" href="#maintenance-new"><i class="fa-solid fa-circle-plus me-1"></i>Log maintenance</a>
+                        <a class="btn btn-outline-primary" href="#maintenance"><i class="fa-solid fa-screwdriver-wrench me-1"></i>Maintenance</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-7 col-xl-8">
+            <!-- Sample rows until the API is connected. Material names are generic on purpose: this repo is public. -->
+            <div class="card mb-4" id="lowStockCard">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Low stock</span>
+                    <span class="badge rounded-pill text-bg-warning">3</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="ps-3">Material</th>
+                                <th scope="col" class="text-end text-nowrap">In stock</th>
+                                <!-- Hidden on phones so the table fits; the status badge already says how short the material is. -->
+                                <th scope="col" class="text-end d-none d-sm-table-cell">Minimum</th>
+                                <th scope="col" class="text-end pe-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-3">Slip additive</td>
+                                <td class="text-end text-nowrap">0 kg</td>
+                                <td class="text-end text-nowrap d-none d-sm-table-cell">25 kg</td>
+                                <td class="text-end pe-3"><span class="badge text-bg-danger">Out of stock</span></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3">White masterbatch</td>
+                                <td class="text-end text-nowrap">18 kg</td>
+                                <td class="text-end text-nowrap d-none d-sm-table-cell">50 kg</td>
+                                <td class="text-end pe-3"><span class="badge text-bg-warning">Low</span></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3">LDPE granulate</td>
+                                <td class="text-end text-nowrap">500 kg</td>
+                                <td class="text-end text-nowrap d-none d-sm-table-cell">500 kg</td>
+                                <td class="text-end pe-3"><span class="badge text-bg-warning">Low</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 col-xl-4">
+            <!-- Sample values until the OpenWeather API is connected. -->
+            <div class="card mb-4" id="weatherCard">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Weather</span>
+                    <span class="small text-muted"><i class="fa-solid fa-location-dot me-1"></i>Sarajevo</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-cloud-sun fa-3x text-primary me-3"></i>
+                        <div>
+                            <div class="fs-2 fw-semibold lh-1">14&deg;C</div>
+                            <div class="text-muted">Partly cloudy</div>
+                        </div>
+                    </div>
+                    <ul class="list-inline small text-muted mb-3">
+                        <li class="list-inline-item me-3"><i class="fa-solid fa-temperature-half me-1"></i>Feels like 12&deg;C</li>
+                        <li class="list-inline-item me-3"><i class="fa-solid fa-wind me-1"></i>3 m/s</li>
+                        <li class="list-inline-item"><i class="fa-solid fa-droplet me-1"></i>62%</li>
+                    </ul>
+                    <div class="border-top pt-3">
+                        <div class="small text-uppercase text-muted mb-2">Next hours</div>
+                        <div class="row row-cols-4 g-2 text-center small">
+                            <div class="col">
+                                <div class="text-muted">15:00</div>
+                                <div class="my-2"><i class="fa-solid fa-sun fa-lg text-warning"></i></div>
+                                <div class="fw-semibold">15&deg;</div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted">18:00</div>
+                                <div class="my-2"><i class="fa-solid fa-cloud fa-lg text-secondary"></i></div>
+                                <div class="fw-semibold">12&deg;</div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted">21:00</div>
+                                <div class="my-2"><i class="fa-solid fa-cloud-bolt fa-lg text-danger"></i></div>
+                                <div class="fw-semibold">10&deg;</div>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted">00:00</div>
+                                <div class="my-2"><i class="fa-solid fa-cloud-rain fa-lg text-primary"></i></div>
+                                <div class="fw-semibold">8&deg;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">Source: OpenWeather</div>
+            </div>
+        </div>
+    </div>
+</div>

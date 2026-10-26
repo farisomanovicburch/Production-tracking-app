@@ -1,0 +1,179 @@
+/*
+ * Production Tracker theme on top of SB Admin 7.0.7 (Bootstrap 5.2.3).
+ * Must load after assets/lib/sb-admin/styles.css: most rules here win only
+ * because they come later with the same specificity.
+ *
+ * Bootstrap 5.2 compiles most component colours to literal hex values, so
+ * changing --bs-primary alone recolours only the utilities (.bg-primary,
+ * .text-primary). Every component that shows the brand colour is re-pointed
+ * at the --pt-* tokens below, so the palette is changed in one place.
+ *
+ * Classes prefixed pt- are ours; sb- classes belong to the template.
+ */
+
+:root {
+  --pt-primary: #4338ca;
+  --pt-primary-rgb: 67, 56, 202;
+  --pt-primary-hover: #3730a3;
+  --pt-primary-active: #312e81;
+  --pt-primary-light: #a5b4fc;
+
+  --pt-nav-bg: #1e1b4b;
+  --pt-nav-heading: #818cf8;
+  --pt-nav-link: #c7d2fe;
+
+  /* Slightly tinted page so white cards stand out from it. */
+  --pt-content-bg: #f5f6fa;
+
+  --bs-primary: var(--pt-primary);
+  --bs-primary-rgb: var(--pt-primary-rgb);
+  --bs-link-color: var(--pt-primary);
+  --bs-link-hover-color: var(--pt-primary-hover);
+  --bs-body-bg: var(--pt-content-bg);
+}
+
+/* ---------- Bootstrap components ---------- */
+
+.btn-primary {
+  --bs-btn-bg: var(--pt-primary);
+  --bs-btn-border-color: var(--pt-primary);
+  --bs-btn-hover-bg: var(--pt-primary-hover);
+  --bs-btn-hover-border-color: var(--pt-primary-hover);
+  --bs-btn-focus-shadow-rgb: var(--pt-primary-rgb);
+  --bs-btn-active-bg: var(--pt-primary-active);
+  --bs-btn-active-border-color: var(--pt-primary-active);
+  --bs-btn-disabled-bg: var(--pt-primary);
+  --bs-btn-disabled-border-color: var(--pt-primary);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pt-primary);
+  --bs-btn-border-color: var(--pt-primary);
+  --bs-btn-hover-bg: var(--pt-primary);
+  --bs-btn-hover-border-color: var(--pt-primary);
+  --bs-btn-focus-shadow-rgb: var(--pt-primary-rgb);
+  --bs-btn-active-bg: var(--pt-primary);
+  --bs-btn-active-border-color: var(--pt-primary);
+  --bs-btn-disabled-color: var(--pt-primary);
+  --bs-btn-disabled-border-color: var(--pt-primary);
+}
+
+/* The vendor rule is !important, so this one has to be as well. */
+.text-bg-primary {
+  background-color: rgba(var(--pt-primary-rgb), var(--bs-bg-opacity, 1)) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--pt-primary-light);
+  box-shadow: 0 0 0 0.25rem rgba(var(--pt-primary-rgb), 0.25);
+}
+
+.form-check-input:checked,
+.form-check-input[type=checkbox]:indeterminate {
+  background-color: var(--pt-primary);
+  border-color: var(--pt-primary);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--pt-primary);
+}
+
+/* ---------- Top navigation ---------- */
+
+.pt-topnav {
+  background-color: var(--pt-nav-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* The template fixes the brand at the sidebar's 225px width so it lines up
+   with the sidebar below. "Production Tracker" is wider than that and ran
+   under the toggle button; with the toggle moved to the left edge there is
+   nothing left to line up with, and a phone needs the room for the language
+   switcher and user menu. */
+.sb-topnav .navbar-brand {
+  width: auto;
+}
+
+/* ---------- Side navigation (replaces the template's sb-sidenav-dark) ---------- */
+
+.pt-sidenav {
+  background-color: var(--pt-nav-bg);
+  color: var(--pt-nav-link);
+  /* Makes the browser draw a dark scrollbar when the menu overflows. */
+  color-scheme: dark;
+}
+
+.pt-sidenav .sb-sidenav-menu-heading {
+  color: var(--pt-nav-heading);
+}
+
+/* Bootstrap's .nav-link:focus would otherwise paint a clicked link in the dark
+   link-hover colour, which disappears against the dark sidebar. */
+.pt-sidenav .nav-link {
+  color: var(--pt-nav-link);
+}
+
+.pt-sidenav .nav-link .sb-nav-link-icon {
+  color: var(--pt-nav-heading);
+}
+
+.pt-sidenav .nav-link:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.pt-sidenav .nav-link.active {
+  color: #fff;
+  background-color: var(--pt-primary);
+  box-shadow: inset 4px 0 0 var(--pt-primary-light);
+}
+
+.pt-sidenav .nav-link:hover .sb-nav-link-icon,
+.pt-sidenav .nav-link.active .sb-nav-link-icon {
+  color: #fff;
+}
+
+/* ---------- Pages (spapp sections) ---------- */
+
+/* Each section's id is also the address hash, so a page opened from a link,
+   bookmark or new tab can make the browser jump to its section. Whether it
+   does depends on the view arriving before the page finishes loading, so it
+   only happens sometimes; when it does, the jump lines the section up with
+   the top of the window, under the 56px fixed top bar. The section starts
+   at its heading, because the heading's 1.5rem (24px) top margin collapses
+   out of it, so stopping 56 + 24px early leaves the page exactly as it is
+   without a jump. */
+main#spapp > section {
+  scroll-margin-top: 80px;
+}
+
+/* Amount fields inside table cells (materials used in a run): wide enough for
+   "1234.5", narrow enough that the material name keeps the room on a phone. */
+.pt-amount {
+  max-width: 8rem;
+}
+
+/* ---------- Pages outside the app layout (login, register) ---------- */
+
+/* app.js puts pt-auth-page on <body> for these pages. Hiding the bars is not
+   enough on its own: the template keeps 56px free at the top and 225px on the
+   left for them, so those offsets are cancelled too. */
+body.pt-auth-page .sb-topnav,
+body.pt-auth-page #layoutSidenav_nav {
+  display: none;
+}
+
+body.pt-auth-page #layoutSidenav #layoutSidenav_content {
+  top: 0;
+  margin-left: 0;
+  padding-left: 0;
+  min-height: 100vh;
+}
+
+/* With the top bar gone, the brand colour moves to the page itself, so the
+   white login card still sits in the app's own colours. */
+body.pt-auth-page {
+  background-color: var(--pt-nav-bg);
+}

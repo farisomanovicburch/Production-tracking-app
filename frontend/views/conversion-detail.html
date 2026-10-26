@@ -1,0 +1,120 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Conversion details</h1>
+        <a class="btn btn-outline-secondary" href="#conversions"><i class="fa-solid fa-arrow-left me-1"></i>Conversions</a>
+    </div>
+    <div class="alert alert-warning d-none" data-record-missing>
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>This conversion does not exist.
+        <a class="alert-link" href="#conversions">Back to conversions</a>
+    </div>
+    <!-- Sample conversion until the API is connected; every id shows the same one.
+         The value attributes are the saved values that Cancel returns to. -->
+    <div data-record-content>
+        <form id="conversionDetailForm" data-edit-form novalidate>
+            <div class="card mb-4">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-3">
+                    <dl class="row mb-0 flex-grow-1">
+                        <dt class="col-5 col-md-3">Conversion</dt>
+                        <dd class="col-7 col-md-9">#<span data-record-id></span></dd>
+                        <dt class="col-5 col-md-3">Machine</dt>
+                        <dd class="col-7 col-md-9" data-identity>Bag machine 1</dd>
+                        <dt class="col-5 col-md-3">From</dt>
+                        <dd class="col-7 col-md-9" data-identity>LDPE film, white</dd>
+                        <dt class="col-5 col-md-3">To</dt>
+                        <dd class="col-7 col-md-9" data-identity>Carrier bag, white</dd>
+                        <dt class="col-5 col-md-3">Logged by</dt>
+                        <dd class="col-7 col-md-9 mb-0">Demo Operator</dd>
+                    </dl>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary" data-edit-start><i class="fa-solid fa-pen me-1"></i>Edit</button>
+                        <button type="button" class="btn btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="card-footer small text-muted">Machine and products cannot be changed. If one of them is wrong, delete the conversion and log it again.</div>
+            </div>
+
+            <fieldset data-editable disabled>
+                <legend class="visually-hidden">Conversion values</legend>
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Time</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="conversionDetailDate">Date</label>
+                                    <input class="form-control" id="conversionDetailDate" type="date" value="2026-10-22" required>
+                                    <div class="invalid-feedback">Choose the date.</div>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label class="form-label" for="conversionDetailStart">Start</label>
+                                    <input class="form-control" id="conversionDetailStart" type="time" value="08:00" required>
+                                    <div class="invalid-feedback">Enter the start time.</div>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                    <label class="form-label" for="conversionDetailEnd">End</label>
+                                    <input class="form-control" id="conversionDetailEnd" type="time" value="12:00" required>
+                                    <div class="invalid-feedback">Enter the end time.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">Machine parameters</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="conversionDetailParam1">Weld time (s)</label>
+                                    <input class="form-control" id="conversionDetailParam1" type="number" min="0" step="0.01" value="0.45" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="conversionDetailParam2">Cooling time (s)</label>
+                                    <input class="form-control" id="conversionDetailParam2" type="number" min="0" step="0.01" value="0.30" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label" for="conversionDetailParam3">Speed (bags/min)</label>
+                                    <input class="form-control" id="conversionDetailParam3" type="number" min="0" step="1" value="40" required>
+                                    <div class="invalid-feedback">Enter the value.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">Quantities</div>
+                            <div class="card-body row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="conversionDetailInputKg">Input (kg)</label>
+                                    <input class="form-control" id="conversionDetailInputKg" type="number" min="0.1" step="0.1" value="1000" required data-not-before="#conversionDetailOutputKg" data-order-message="The input must be at least the output.">
+                                    <div class="invalid-feedback">Above 0, and at least the output.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="conversionDetailOutputKg">Output (kg)</label>
+                                    <input class="form-control" id="conversionDetailOutputKg" type="number" min="0" step="0.1" value="950" required>
+                                    <div class="invalid-feedback">Enter 0 or more.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="conversionDetailBags">Number of bags</label>
+                                    <input class="form-control" id="conversionDetailBags" type="number" min="0" step="1" value="9000" required>
+                                    <div class="invalid-feedback">Enter a whole number.</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <span class="form-label d-block">Scrap</span>
+                                    <output class="form-control-plaintext fw-semibold" data-scrap-from="#conversionDetailInputKg" data-scrap-minus="#conversionDetailOutputKg">50.0 kg</output>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="conversionDetailNotes">Notes</label>
+                                    <textarea class="form-control" id="conversionDetailNotes" rows="2" maxlength="1000"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="d-flex justify-content-end gap-2 mb-4 d-none" data-edit-actions>
+                <button type="button" class="btn btn-outline-secondary" data-edit-cancel>Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>

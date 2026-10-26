@@ -1,0 +1,72 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Conversions</h1>
+        <a class="btn btn-primary" href="#conversion-new"><i class="fa-solid fa-circle-plus me-1"></i>Log conversion</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-2 align-items-end" data-validate-only novalidate>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small" for="conversionsFilterFrom">From</label>
+                    <input class="form-control" id="conversionsFilterFrom" type="date">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small" for="conversionsFilterTo">To</label>
+                    <input class="form-control" id="conversionsFilterTo" type="date" data-not-before="#conversionsFilterFrom" data-order-message="The end date must not be before the start date.">
+                    <div class="invalid-feedback">Not before "From".</div>
+                </div>
+                <div class="col-8 col-md-4">
+                    <label class="form-label small" for="conversionsFilterProduct">Output product</label>
+                    <select class="form-select" id="conversionsFilterProduct">
+                        <option value="">All</option>
+                        <option value="3">Carrier bag, white</option>
+                        <option value="4">Waste bag 60 L</option>
+                    </select>
+                </div>
+                <div class="col-4 col-md-2 d-grid">
+                    <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-filter"></i><span class="visually-hidden">Filter</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sample rows until the API is connected. Scrap is not stored: input minus output. -->
+    <div class="card mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-3">Date</th>
+                        <th scope="col" class="d-none d-lg-table-cell">Machine</th>
+                        <th scope="col" class="d-none d-md-table-cell">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col" class="d-none d-sm-table-cell text-end">Bags</th>
+                        <th scope="col" class="d-none d-lg-table-cell text-end">Scrap</th>
+                        <th scope="col" class="text-end pe-3"><span class="visually-hidden">Open</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-3 text-nowrap">22.10.2026</td>
+                        <td class="d-none d-lg-table-cell">Bag machine 1</td>
+                        <td class="d-none d-md-table-cell">LDPE film, white</td>
+                        <td>Carrier bag, white</td>
+                        <td class="d-none d-sm-table-cell text-end">9000</td>
+                        <td class="d-none d-lg-table-cell text-end text-nowrap">50 kg</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#conversion-detail?id=2">Open</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3 text-nowrap">19.10.2026</td>
+                        <td class="d-none d-lg-table-cell">Bag machine 1</td>
+                        <td class="d-none d-md-table-cell">LDPE film, clear</td>
+                        <td>Waste bag 60 L</td>
+                        <td class="d-none d-sm-table-cell text-end">4200</td>
+                        <td class="d-none d-lg-table-cell text-end text-nowrap">28 kg</td>
+                        <td class="text-end pe-3"><a class="btn btn-sm btn-outline-primary" href="#conversion-detail?id=1">Open</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

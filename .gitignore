@@ -1,0 +1,13 @@
+# Holds DB credentials, the JWT secret and API keys, and this repo is public.
+# config.example.php (placeholders only) is committed in its place.
+backend/config/config.php
+
+# Logs are runtime output, not source. Nothing in this folder is tracked,
+# so it does not exist on a fresh clone: the logger must create it.
+backend/logs/*
+
+# Composer dependencies are reinstalled from composer.lock, never committed.
+vendor/
+
+# Personal Claude Code permissions, not shared project settings.
+.claude/settings.local.json

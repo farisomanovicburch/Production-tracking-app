@@ -1,0 +1,166 @@
+<div class="container-fluid px-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 mb-4">
+        <h1 class="mb-0">Materials</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deliveryModal" data-modal-title="Add delivery">
+                <i class="fa-solid fa-truck-ramp-box me-1"></i>Add delivery
+            </button>
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Add material">
+                <i class="fa-solid fa-circle-plus me-1"></i>Add material
+            </button>
+        </div>
+    </div>
+
+    <!-- Sample rows until the API is connected; they match the dashboard's low-stock card. -->
+    <div class="card mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-3">Material</th>
+                        <th scope="col" class="d-none d-lg-table-cell">Supplier</th>
+                        <th scope="col" class="text-end text-nowrap">In stock</th>
+                        <th scope="col" class="d-none d-md-table-cell text-end">Minimum</th>
+                        <th scope="col" class="d-none d-sm-table-cell">Status</th>
+                        <th scope="col" class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-3">LDPE granulate</td>
+                        <td class="d-none d-lg-table-cell">Supplier A</td>
+                        <td class="text-end text-nowrap">500 kg</td>
+                        <td class="d-none d-md-table-cell text-end text-nowrap">500 kg</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-warning">Low</span></td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Edit material" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3">HDPE granulate</td>
+                        <td class="d-none d-lg-table-cell">Supplier A</td>
+                        <td class="text-end text-nowrap">1250 kg</td>
+                        <td class="d-none d-md-table-cell text-end text-nowrap">400 kg</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-success">OK</span></td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Edit material" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3">White masterbatch</td>
+                        <td class="d-none d-lg-table-cell">Supplier B</td>
+                        <td class="text-end text-nowrap">18 kg</td>
+                        <td class="d-none d-md-table-cell text-end text-nowrap">50 kg</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-warning">Low</span></td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Edit material" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3">Black masterbatch</td>
+                        <td class="d-none d-lg-table-cell">Supplier B</td>
+                        <td class="text-end text-nowrap">75 kg</td>
+                        <td class="d-none d-md-table-cell text-end text-muted">none</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-light">No minimum</span></td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Edit material" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-3">Slip additive</td>
+                        <td class="d-none d-lg-table-cell">Supplier C</td>
+                        <td class="text-end text-nowrap">0 kg</td>
+                        <td class="d-none d-md-table-cell text-end text-nowrap">25 kg</td>
+                        <td class="d-none d-sm-table-cell"><span class="badge text-bg-danger">Out of stock</span></td>
+                        <td class="text-end pe-3 text-nowrap">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#materialModal" data-modal-title="Edit material" aria-label="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deliveryModal" tabindex="-1" aria-labelledby="deliveryModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" novalidate>
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="deliveryModalTitle">Add delivery</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">The delivered amount is added to the material's stock.</p>
+                    <div class="mb-3">
+                        <label class="form-label" for="deliveryMaterial">Material</label>
+                        <select class="form-select" id="deliveryMaterial" required>
+                            <option value="">Choose…</option>
+                            <option value="1">LDPE granulate</option>
+                            <option value="2">HDPE granulate</option>
+                            <option value="3">White masterbatch</option>
+                            <option value="4">Black masterbatch</option>
+                            <option value="5">Slip additive</option>
+                        </select>
+                        <div class="invalid-feedback">Choose the delivered material.</div>
+                    </div>
+                    <div>
+                        <label class="form-label" for="deliveryQuantity">Quantity</label>
+                        <div class="input-group has-validation">
+                            <input class="form-control" id="deliveryQuantity" type="number" min="0.01" step="0.01" required>
+                            <span class="input-group-text">kg</span>
+                            <div class="invalid-feedback">Enter an amount above 0.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add to stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="materialModal" tabindex="-1" aria-labelledby="materialModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" novalidate>
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="materialModalTitle">Add material</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-sm-8">
+                            <label class="form-label" for="materialName">Name</label>
+                            <input class="form-control" id="materialName" type="text" maxlength="100" required>
+                            <div class="invalid-feedback">Enter the material's name.</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label" for="materialUnit">Unit</label>
+                            <select class="form-select" id="materialUnit" required>
+                                <option value="kg">kg</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="materialSupplier">Supplier <span class="text-muted">(optional)</span></label>
+                            <input class="form-control" id="materialSupplier" type="text" maxlength="100">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" for="materialMinStock">Minimum stock <span class="text-muted">(optional)</span></label>
+                            <input class="form-control" id="materialMinStock" type="number" min="0" step="0.01" aria-describedby="materialMinStockHelp">
+                            <div class="invalid-feedback">Use 0 or more.</div>
+                            <div class="form-text" id="materialMinStockHelp">Leave empty for no low-stock warning.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
