@@ -13,7 +13,7 @@
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/
   - js/services/: the only frontend code that calls the backend (M5 frontend MVC rule)
-- backend/: routes/, services/, dao/, middleware/, config/, logs/
+- backend/: rest/ (routes/, services/, dao/), middleware/, config/, logs/ — the course repo's layout
 - docs/: AI_LOG.md and other documentation
 ## Frontend rules
 - Each view is in its own file in frontend/views/.
