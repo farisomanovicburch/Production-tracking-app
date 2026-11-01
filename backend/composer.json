@@ -1,0 +1,14 @@
+{
+    "name": "farisomanovic/production-tracker-backend",
+    "description": "Production Tracker - REST API for the IT 2001 Web Programming course project",
+    "type": "project",
+    "require": {
+        "php": ">=8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13"
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

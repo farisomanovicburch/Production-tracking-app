@@ -9,5 +9,8 @@ backend/logs/*
 # Composer dependencies are reinstalled from composer.lock, never committed.
 vendor/
 
+# PHPUnit rewrites this after every run (results of the last run), so it is local state, not source.
+.phpunit.result.cache
+
 # Personal Claude Code permissions, not shared project settings.
 .claude/settings.local.json
