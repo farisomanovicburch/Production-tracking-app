@@ -303,3 +303,108 @@
   waiting for the race, so it fails without the rule every time. Lesson: reproduce a
   reported bug myself before accepting it, and be suspicious of bugs that only one
   person can see.
+
+## Milestone 2
+
+### Tools and tasks
+
+**1. Planning Milestone 2**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** turn the Milestone 2 requirements into steps with one commit each, using the
+  course repository's week-03 DAO code as the reference for syntax.
+- **Main prompt:** "We now need to implement milestone 2. First we will create steps that i
+  will need to do in order to finish the milestone … For dao layer syntax and context use
+  this github repo … First plan all the steps and write where each commit should be for
+  clean history".
+- **What was generated:** a step plan with eight commits, and questions about the test
+  tool, method naming, when the database may be dropped, and who creates the branch.
+- **What I kept, changed or rejected:** I kept everything the plan was good.
+
+**2. PHP, Composer and the database server**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** install Composer, decide which PHP version to develop on, and make the local
+  PHP and database usable for the backend and its tests.
+- **Main prompt:** "do you think we should use newer version of php and phpunit. I also
+  heard about php2shell and the vunreablitys about php so what do you suggest".
+- **What was generated:** an assessment of the PHP2Shell flaws and of PHP 8.2's end of
+  support, two options (keep XAMPP's PHP 8.2 or install PHP 8.4), step-by-step install
+  instructions, and the finding that the database on port 3306 is a separate MySQL 8.0
+  service, not XAMPP's MariaDB.
+- **What I kept, changed or rejected:** I choose to move to MySQL intead of MariaDB and newer PHP version.
+
+**3. Database schema and sample data**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** write `database/production_tracker.sql` from the ERD, with sample data matching
+  the Milestone 1 pages, and tests written before each constraint and before the data.
+- **Main prompts:** my answers to its questions: which constraints get a test, the order of
+  a run's times ("warmup started at < started at < stable at < ended at and always like
+  this"), unique recipe names, and the test passwords.
+- **What was generated:** 15 tables with named keys and checks, the sample data, a test
+  bootstrap that rebuilds the database before every run, and tests for six constraints and
+  for the sample data.
+- **What I kept, changed or rejected:** The database looked okay so i left everything.
+
+**4. DAO layer**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** BaseDao with generic CRUD and one DAO per table, test-first.
+- **Main prompt:** "Okay lets move to step 4 while you start working on it just give me all
+  the substeps of it".
+- **What was generated:** `BaseDao` (shared connection, prepared statements, a column
+  whitelist), 15 DAOs with JOIN queries for the list and setup pages, tests for each, and
+  sabotage runs showing that each important test can fail.
+- **What I kept, changed or rejected:** Everything.
+
+**5. Documentation**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** bring the README, the ERD and CLAUDE.md in line with the database and DAOs.
+- **Main prompt:** "Okay start working on commit 7 as always write the substeps of it".
+- **What was generated:** README sections on test accounts and running the project, the ERD
+  matching the SQL with re-rendered pictures, and new backend rules in CLAUDE.md.
+- **What I kept, changed or rejected:** Everything.
+
+### Where the AI was wrong
+
+**1. The wrong database server**
+- **What was wrong:** the AI assumed the database was XAMPP's MariaDB and had me limit
+  MariaDB to my own computer. The server on port 3306 was a separate MySQL 8.0 service
+  installed a year earlier, so the change did nothing and the database stayed open to the
+  network.
+- **How I noticed:** the port check I ran afterwards still showed port 3306 open on all
+  network addresses, and the AI traced it to the MySQL80 service.
+- **How I fixed it:** I chose to use MySQL 8 (the course requires MySQL), limited that
+  server and its second port (33060) to 127.0.0.1, and left XAMPP's MariaDB unused.
+  Lesson: check which program is really listening before changing a configuration file.
+
+**2. A PHP version picked without checking its security status**
+- **What was wrong:** the AI's first `composer.json` targeted XAMPP's PHP 8.2 and PHPUnit 11
+  without checking whether PHP 8.2 was safe. XAMPP's 8.2.12 is affected by the PHP2Shell
+  flaws, and PHP 8.2 stops getting security fixes on 31.12.2026, before the Milestone 5
+  deployment.
+- **How I noticed:** I asked about PHP2Shell before running `composer install`.
+- **How I fixed it:** I installed PHP 8.4.27, moved to PHPUnit 13, and limited XAMPP's Apache
+  to my own computer. Lesson: check the support status of a runtime before building on it.
+
+**3. A wrong prediction of the assertion count**
+- **What was wrong:** the AI predicted "OK (7 tests, 8 assertions)"; PHPUnit reported 13,
+  because `expectException` and `expectExceptionMessageMatches` count as assertions too.
+- **How I noticed:** I compared the number in the output with the prediction and asked.
+- **How I fixed it:** nothing in the code was wrong; the AI corrected its explanation.
+  Lesson: compare the output with the prediction, not only "OK" with "FAIL".
+
+**4. Test data that collided with the sample data**
+- **What was wrong:** the schema tests created a test user `operator@example.com`. Once the
+  sample data seeded the same email, four schema tests failed on the unique email rule. One
+  of them would even have passed for the wrong reason without its check on the exception
+  message.
+- **How I noticed:** the green run after the sample data commit had four failures.
+- **How I fixed it:** the tests use their own emails, and later all test data comes from
+  helpers that number every code and email. Lesson: test data must never reuse values that
+  real or sample data can contain.
+
+**5. A test file cut off halfway**
+- **What was wrong:** the AI wrote several test files in one shell command, which stopped
+  partway. `ConversionRunParameterValueDaoTest.php` ended in the middle of a line and
+  `MaintenanceRecordDaoTest.php` was missing.
+- **How I noticed:** VS Code showed "Unclosed '['" in that test file.
+- **How I fixed it:** the AI rewrote both files with its file tool and checked every test file
+  with `php -l`. Lesson: after generated code is written, check that the files are complete.

@@ -8,12 +8,14 @@
 
 ## Technology stack
 - Frontend: HTML, CSS, JavaScript, jQuery, Bootstrap 5, single-page application (SPA)
-- Backend: PHP with FlightPHP (REST API), PDO, MySQL
-- Local server: XAMPP
+- Backend: PHP 8.4 with FlightPHP (REST API), PDO, MySQL 8; Composer for dependencies, PHPUnit 13 for tests
+- Local setup: PHP 8.4 in C:\php\8.4 (on PATH), MySQL Server 8.0 as the Windows service MySQL80, both listening on 127.0.0.1 only. XAMPP's PHP 8.2 and MariaDB are NOT used (XAMPP's Apache only serves phpMyAdmin).
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/
   - js/services/: the only frontend code that calls the backend (M5 frontend MVC rule)
 - backend/: rest/ (routes/, services/, dao/), middleware/, config/, logs/ — the course repo's layout
+  - tests/: PHPUnit tests (schema/ for database rules and sample data, dao/ for the DAOs)
+- database/production_tracker.sql: the whole database (schema + sample data). It DROPS and recreates production_tracker, and the test bootstrap runs it before every test run.
 - docs/: AI_LOG.md and other documentation
 ## Frontend rules
 - Each view is in its own file in frontend/views/.
@@ -24,6 +26,10 @@
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL uses PDO prepared statements.
 - Routes return JSON with correct HTTP status codes.
+- One DAO per table, extending BaseDao. A DAO names its table and its writable columns (the whitelist); every column except id, created_at and updated_at must be in it (DaoWhitelistTest enforces this).
+- A DAO never returns users.password_hash, except UserDao::getByEmail() for the login check.
+- BaseDao::update() returns the number of CHANGED rows, so 0 does not mean "not found": check existence with getById() before answering 404.
+- Run the tests from backend/: `php vendor/bin/phpunit`. Each test runs in a transaction that is rolled back; fixtures come from DatabaseTestCase's create*() helpers, never from the sample data.
 ## Conventions
 - PHP classes: PascalCase (UserService, UserDao). Files are named after the class.
 - JavaScript and PHP variables: camelCase. Database tables and columns: snake_case.
