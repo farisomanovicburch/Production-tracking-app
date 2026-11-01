@@ -22,6 +22,12 @@ final class DaoWhitelistTest extends DatabaseTestCase
             'recipes' => [RecipeDao::class, 'recipes'],
             'recipe_items' => [RecipeItemDao::class, 'recipe_items'],
             'recipe_products' => [RecipeProductDao::class, 'recipe_products'],
+            'production_runs' => [ProductionRunDao::class, 'production_runs'],
+            'run_parameter_values' => [RunParameterValueDao::class, 'run_parameter_values'],
+            'material_usages' => [MaterialUsageDao::class, 'material_usages'],
+            'conversion_runs' => [ConversionRunDao::class, 'conversion_runs'],
+            'conversion_run_parameter_values' => [ConversionRunParameterValueDao::class, 'conversion_run_parameter_values'],
+            'maintenance_records' => [MaintenanceRecordDao::class, 'maintenance_records'],
         ];
     }
 

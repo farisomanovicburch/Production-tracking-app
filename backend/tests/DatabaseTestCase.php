@@ -38,4 +38,51 @@ abstract class DatabaseTestCase extends TestCase
         $statement->execute(['value' => $value]);
         return (int) $statement->fetchColumn();
     }
+
+    /* ---------- fixtures ---------- */
+
+    // Codes, emails and default names carry a running number, so fixtures never collide with each other
+    // or with the sample data (EX-01, P-100, admin@example.com, ...).
+    private int $fixtureNumber = 0;
+
+    protected function createUser(string $fullName = 'Test User'): int
+    {
+        $number = ++$this->fixtureNumber;
+        return $this->insertRow('users', [
+            'full_name' => $fullName, 'email' => "fixture$number@example.com", 'password_hash' => 'not-a-real-hash',
+        ]);
+    }
+
+    protected function createMachine(string $type, string $name = 'Test machine'): int
+    {
+        return $this->insertRow('machines', ['name' => $name, 'code' => 'T-M' . ++$this->fixtureNumber, 'machine_type' => $type]);
+    }
+
+    protected function createProduct(string $name = 'Test product', string $unit = 'kg'): int
+    {
+        return $this->insertRow('products', ['code' => 'T-P' . ++$this->fixtureNumber, 'name' => $name, 'unit' => $unit]);
+    }
+
+    protected function createRecipe(?string $name = null): int
+    {
+        return $this->insertRow('recipes', ['name' => $name ?? 'Test recipe ' . ++$this->fixtureNumber]);
+    }
+
+    protected function createMaterial(?string $name = null): int
+    {
+        return $this->insertRow('materials', ['name' => $name ?? 'Test material ' . ++$this->fixtureNumber]);
+    }
+
+    protected function createRun(int $machineId, array $overrides = []): int
+    {
+        return $this->insertRow('production_runs', array_merge([
+            'machine_id' => $machineId,
+            'product_id' => $this->createProduct(),
+            'recipe_id' => $this->createRecipe(),
+            'user_id' => $this->createUser(),
+            'started_at' => '2026-10-20 08:00:00',
+            'ended_at' => '2026-10-20 14:00:00',
+            'quantity_produced' => 500,
+        ], $overrides));
+    }
 }
