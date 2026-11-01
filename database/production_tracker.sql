@@ -6,6 +6,11 @@
 -- WARNING: this script DROPS and recreates the whole production_tracker
 -- database. The backend tests run it before every test run, so never keep
 -- data you care about in this database.
+--
+-- Test accounts (password in brackets):
+--   admin@example.com     (admin123)     - role admin
+--   operator@example.com  (operator456)  - role operator
+--   former@example.com    (former789)    - role operator, DEACTIVATED: login must be refused
 -- =====================================================================
 
 -- Read this file as UTF-8 (names with č, ć, š, đ, ž)
@@ -224,3 +229,102 @@ CREATE TABLE maintenance_records (
     CONSTRAINT fk_maintenance_records_user    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE RESTRICT,
     CONSTRAINT chk_maintenance_records_ends_after_start CHECK (ended_at >= started_at)
 );
+
+-- ---------------------------------------------------------------------
+-- Sample data: the same machines, products, materials, recipes and records
+-- the Milestone 1 pages show. All names are invented.
+-- Ids are written out so the relationships below can be read by hand.
+-- ---------------------------------------------------------------------
+
+INSERT INTO users (id, full_name, email, password_hash, role, is_active, created_at) VALUES
+(1, 'Demo Admin',      'admin@example.com',    '$2y$12$JpqWeJVlSAN6WaW3RSWzTePs9k2cZMvO.e5oU32003tn8Fdfevphy', 'admin',    TRUE,  '2026-09-01 08:00:00'),
+(2, 'Demo Operator',   'operator@example.com', '$2y$12$3UukDSIvq.S7e71S0mYutO/Hp5PCJ92EF8P3BLuDYwG.BGG.AbgvS', 'operator', TRUE,  '2026-09-01 08:05:00'),
+(3, 'Former Operator', 'former@example.com',   '$2y$12$NwGQKe8iFWMghPJhGnRL2.cR0.EW/EfvKyIFCR17sIuLbT2paYOHm', 'operator', FALSE, '2026-09-01 08:10:00');
+
+INSERT INTO machines (id, name, code, machine_type, is_active) VALUES
+(1, 'Extruder 1',    'EX-01', 'extrusion',  TRUE),
+(2, 'Extruder 2',    'EX-02', 'extrusion',  TRUE),
+(3, 'Bag machine 1', 'BM-01', 'conversion', TRUE),
+(4, 'Extruder 3',    'EX-03', 'extrusion',  FALSE);
+
+INSERT INTO machine_parameters (id, machine_id, name, unit, display_order) VALUES
+(1,  1, 'Zone 1 temperature', '°C',       1),
+(2,  1, 'Screw speed',        'rpm',      2),
+(3,  1, 'Haul-off speed',     'm/min',    3),
+(4,  2, 'Zone 1 temperature', '°C',       1),
+(5,  2, 'Screw speed',        'rpm',      2),
+(6,  2, 'Haul-off speed',     'm/min',    3),
+(7,  3, 'Weld time',          's',        1),
+(8,  3, 'Cooling time',       's',        2),
+(9,  3, 'Speed',              'bags/min', 3),
+(10, 4, 'Zone 1 temperature', '°C',       1);
+
+INSERT INTO products (id, code, name, width_mm, thickness_um, length_m, unit, is_active) VALUES
+(1, 'P-100', 'LDPE film, clear', 1000, 50, NULL, 'kg',  TRUE),
+(2, 'P-110', 'LDPE film, white',  800, 40, NULL, 'kg',  TRUE),
+(3, 'P-200', 'Carrier bag, white', 300, 40, 0.50, 'pcs', TRUE),
+(4, 'P-210', 'Waste bag 60 L',     600, 30, 0.80, 'pcs', FALSE);
+
+-- Extruders make film (output); the bag machine turns film (input) into bags (output).
+INSERT INTO machine_products (machine_id, product_id, role) VALUES
+(1, 1, 'output'), (1, 2, 'output'),
+(2, 1, 'output'), (2, 2, 'output'),
+(3, 1, 'input'),  (3, 2, 'input'), (3, 3, 'output'), (3, 4, 'output'),
+(4, 2, 'output');
+
+-- LDPE granulate sits exactly at its minimum, white masterbatch below it and slip additive at 0,
+-- so the dashboard's low-stock card has something to show.
+INSERT INTO materials (id, name, unit, supplier, stock_qty, min_stock_qty) VALUES
+(1, 'LDPE granulate',    'kg', 'Supplier A',  500.000, 500.000),
+(2, 'HDPE granulate',    'kg', 'Supplier A', 1250.000, 400.000),
+(3, 'White masterbatch', 'kg', 'Supplier B',   18.000,  50.000),
+(4, 'Black masterbatch', 'kg', 'Supplier B',   75.000,    NULL),
+(5, 'Slip additive',     'kg', 'Supplier C',    0.000,  25.000);
+
+INSERT INTO recipes (id, name, notes, is_active) VALUES
+(1, 'Clear film',           NULL,                         TRUE),
+(2, 'White film',           'Mix the masterbatch first.', TRUE),
+(3, 'Black waste-bag film', NULL,                         FALSE);
+
+INSERT INTO recipe_items (recipe_id, material_id, percentage) VALUES
+(1, 1, 99.00), (1, 5, 1.00),
+(2, 1, 94.00), (2, 3, 5.00), (2, 5, 1.00),
+(3, 2, 90.00), (3, 1, 7.00), (3, 4, 3.00);
+
+INSERT INTO recipe_products (recipe_id, product_id, is_default) VALUES
+(1, 1, TRUE),
+(2, 2, TRUE);
+
+-- Run 1 is by the deactivated operator: his history has to stay visible after his account is turned off.
+INSERT INTO production_runs (id, machine_id, product_id, recipe_id, user_id, warmup_started_at, started_at, stable_at, ended_at,
+                             quantity_produced, net_weight_per_unit_kg, gross_weight_per_unit_kg, scrap_kg, notes) VALUES
+(1, 2, 2, 2, 3, '2026-10-05 05:30:00', '2026-10-05 06:00:00', '2026-10-05 06:40:00', '2026-10-05 13:30:00',  640.000, NULL,    NULL,    28.000, NULL),
+(2, 1, 1, 1, 2, '2026-10-20 05:30:00', '2026-10-20 06:00:00', '2026-10-20 06:45:00', '2026-10-20 14:00:00',  870.000, 25.0000, 25.8000, 42.000, 'Rolls of 25 kg on 0.8 kg cores.'),
+(3, 2, 1, 1, 1, '2026-10-21 05:45:00', '2026-10-21 06:15:00', '2026-10-21 07:00:00', '2026-10-21 15:00:00', 1180.000, 25.0000, 25.8000, 35.000, NULL),
+(4, 1, 2, 2, 2, '2026-10-22 05:30:00', '2026-10-22 06:00:00', '2026-10-22 06:50:00', '2026-10-22 14:00:00',  950.000, NULL,    NULL,    50.000, 'Colour drifted after the masterbatch change.');
+
+INSERT INTO run_parameter_values (production_run_id, machine_parameter_id, value) VALUES
+(1, 4, 185.000), (1, 5, 62.000), (1, 6, 18.500),
+(2, 1, 180.000), (2, 2, 60.000), (2, 3, 20.000),
+(3, 4, 182.000), (3, 5, 64.000), (3, 6, 21.000),
+(4, 1, 186.000), (4, 2, 58.000), (4, 3, 17.500);
+
+-- Usages follow each run's recipe, applied to output plus scrap.
+INSERT INTO material_usages (production_run_id, material_id, quantity_kg) VALUES
+(1, 1,  627.920), (1, 3,  33.400), (1, 5,  6.680),
+(2, 1,  902.880), (2, 5,   9.120),
+(3, 1, 1202.850), (3, 5,  12.150),
+(4, 1,  940.000), (4, 3,  50.000), (4, 5, 10.000);
+
+INSERT INTO conversion_runs (id, machine_id, user_id, input_product_id, output_product_id, started_at, ended_at,
+                             input_kg, output_kg, bag_count, notes) VALUES
+(1, 3, 2, 1, 4, '2026-10-19 07:00:00', '2026-10-19 13:00:00', 528.000, 500.000, 4200, NULL),
+(2, 3, 1, 2, 3, '2026-10-22 08:00:00', '2026-10-22 15:30:00', 410.000, 360.000, 9000, 'New knife fitted before the job.');
+
+INSERT INTO conversion_run_parameter_values (conversion_run_id, machine_parameter_id, value) VALUES
+(1, 7, 0.600), (1, 8, 0.400), (1, 9, 70.000),
+(2, 7, 0.500), (2, 8, 0.300), (2, 9, 85.000);
+
+INSERT INTO maintenance_records (machine_id, user_id, maintenance_type, started_at, ended_at, description, notes) VALUES
+(1, 2, 'preventive', '2026-10-15 07:00:00', '2026-10-15 09:30:00', 'Gearbox oil change',               NULL),
+(2, 1, 'corrective', '2026-10-21 10:15:00', '2026-10-21 12:00:00', 'Replaced a heater band on zone 3', 'Spare part: 2 kW heater band.');

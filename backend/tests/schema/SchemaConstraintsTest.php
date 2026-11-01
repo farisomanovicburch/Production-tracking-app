@@ -55,7 +55,7 @@ final class SchemaConstraintsTest extends DatabaseTestCase
     {
         $row = [
             'machine_id' => $this->insertMachine('conversion'),
-            'user_id' => $this->insertUser('operator@example.com'),
+            'user_id' => $this->insertUser('schema-test@example.com'),
             'input_product_id' => $this->insertRow('products', ['code' => 'T-FILM', 'name' => 'Test film']),
             'output_product_id' => $this->insertRow('products', ['code' => 'T-BAG', 'name' => 'Test bag', 'unit' => 'pcs']),
             'started_at' => '2026-10-20 08:00:00',
@@ -97,7 +97,7 @@ final class SchemaConstraintsTest extends DatabaseTestCase
             'machine_id' => $machineId,
             'product_id' => $this->insertRow('products', ['code' => 'T-FILM', 'name' => 'Test film']),
             'recipe_id' => $this->insertRow('recipes', ['name' => 'Test recipe']),
-            'user_id' => $this->insertUser('operator@example.com'),
+            'user_id' => $this->insertUser('schema-test@example.com'),
             'started_at' => '2026-10-20 08:00:00',
             'ended_at' => '2026-10-20 14:00:00',
             'quantity_produced' => 500,
