@@ -1,8 +1,8 @@
 # Entity-Relationship Diagram
 
-> **Draft for Milestone 1.** The database itself is built in Milestone 2; this diagram
-> is updated to match the `.sql` file then. A picture of the same diagram is in
-> [erd.svg](erd.svg) (and [erd.png](erd.png)).
+> Matches the database built by
+> [database/production_tracker.sql](../database/production_tracker.sql) (Milestone 2).
+> A picture of the same diagram is in [erd.svg](erd.svg) (and [erd.png](erd.png)).
 
 ```mermaid
 erDiagram
@@ -92,7 +92,7 @@ erDiagram
 
     recipes {
         int id PK
-        varchar name
+        varchar name UK
         varchar notes "nullable"
         boolean is_active
     }
@@ -117,9 +117,9 @@ erDiagram
         int product_id FK
         int recipe_id FK
         int user_id FK "who logged it"
+        datetime warmup_started_at "nullable, before started_at"
         datetime started_at
-        datetime warmup_started_at "nullable"
-        datetime stable_at "nullable: production became stable"
+        datetime stable_at "nullable, between start and end"
         datetime ended_at "after started_at"
         decimal quantity_produced "in the product's unit"
         decimal net_weight_per_unit_kg "nullable"
@@ -208,6 +208,11 @@ for the bags that came out.
   used. Runs, conversions and maintenance records can be deleted; their parameter values
   and material usages are deleted with them.
 - **Scrap of a conversion is not stored**: it is always input minus output.
+- **A run's times are always in this order**: warm-up starts, the run starts, production
+  becomes stable, the run ends. The database refuses any other order; warm-up and stable
+  times may be left empty.
+- **Recipe names are unique**, so operators cannot pick the wrong one of two recipes with
+  the same name.
 - **There is no deliveries table**: a delivery only adds to `materials.stock_qty`.
 
 ## Rules the database cannot check
@@ -221,5 +226,6 @@ the backend services enforce them (Milestone 3):
   products are linked to its machine as input and output.
 - Parameter values belong to parameters of the run's own machine.
 - A recipe's percentages add up to 100.
+- A product has at most one default recipe.
 - Material stock goes down by a run's usages, changes by the difference when a usage is
   edited, and comes back when a run is deleted.

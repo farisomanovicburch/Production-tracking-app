@@ -1,8 +1,10 @@
 # Production Tracker
 
-> **Status: Milestone 1.** The frontend is static: every page exists and navigation works
-> as a single-page application, but the data on the pages is sample data. The backend,
-> database and login come in Milestones 2–4.
+> **Status: Milestone 2.** The MySQL database (15 tables with sample data) and the data
+> access layer (one DAO per table, covered by PHPUnit tests) exist. The frontend is still
+> static: every page exists and navigation works as a single-page application, but the
+> pages show sample data written into the HTML. The REST API, login and the connection
+> between pages and database come in Milestones 3 and 4.
 
 ## Project description
 
@@ -39,9 +41,10 @@ domain knowledge and for lessons about what to do differently.
 | Layer | Technology |
 |---|---|
 | Frontend | HTML, CSS, JavaScript, jQuery 3.7, Bootstrap 5.2 ([SB Admin](https://startbootstrap.com/template/sb-admin) template), Font Awesome, [spapp](https://github.com/amiletti/spapp) (SPA routing, slightly modified) |
-| Backend | PHP 8.2, FlightPHP (REST API), PDO |
-| Database | MySQL (developed on MariaDB 10.4, shipped with XAMPP) |
-| Authentication | JWT |
+| Backend | PHP 8.4, FlightPHP (REST API, from Milestone 3), PDO, Composer |
+| Database | MySQL 8 |
+| Authentication | JWT (Milestone 4) |
+| Tests | PHPUnit 13 |
 
 All frontend libraries are stored in `frontend/assets/lib/`, so the app runs without
 internet access.
@@ -64,9 +67,9 @@ A details page opens locked; Edit unlocks it, and Cancel returns to the saved va
 
 ## Entities and relationships
 
+The database is created by [database/production_tracker.sql](database/production_tracker.sql).
 The full diagram, with every column, is in [docs/erd.md](docs/erd.md) (also as
-[SVG](docs/erd.svg) and [PNG](docs/erd.png)). It is the Milestone 1 draft; the
-database itself is built in Milestone 2.
+[SVG](docs/erd.svg) and [PNG](docs/erd.png)).
 
 | Entity (table) | What it stores |
 |---|---|
@@ -111,8 +114,15 @@ Relationships:
 | **Operator** | Log production runs, conversions and maintenance; view all runs, conversions and maintenance records, including other operators' (they are often needed as a reference); see recipes (including material percentages, needed for mixing), the low-stock warnings and the weather. |
 
 Registering creates an active operator; the first admin account is created by the
-database script. Test accounts for both roles are added with the database in
-Milestone 2.
+database script.
+
+Test accounts (created by `database/production_tracker.sql`):
+
+| Email | Password | Role | Note |
+|---|---|---|---|
+| `admin@example.com` | `admin123` | Admin | |
+| `operator@example.com` | `operator456` | Operator | |
+| `former@example.com` | `former789` | Operator | Deactivated: logging in is refused, but the runs logged with this account stay visible. |
 
 ## External API
 
@@ -127,18 +137,48 @@ card shows a message while the rest of the app keeps working.
 
 ## Running the project locally
 
+### Requirements
+
+- PHP 8.4 with the `pdo_mysql`, `mbstring`, `openssl`, `curl` and `zip` extensions enabled
+- MySQL 8
+- [Composer](https://getcomposer.org/)
+
+### Database and backend
+
+1. **Create the database** by importing the script:
+   ```
+   mysql -u root -p < database/production_tracker.sql
+   ```
+   (or open the file in MySQL Workbench or DataGrip and run it). The script drops and
+   recreates the whole `production_tracker` database, so never keep data you need in it.
+2. **Create the configuration file:** copy `backend/config/config.example.php` to
+   `backend/config/config.php` and enter your MySQL user and password. `config.php` is
+   ignored by Git because it holds secrets.
+3. **Install the backend dependencies:**
+   ```
+   cd backend
+   composer install
+   ```
+4. **Run the tests** (from `backend/`):
+   ```
+   php vendor/bin/phpunit
+   ```
+   Before every run the tests rebuild `production_tracker` from the script, so every run
+   starts from the same sample data.
+
+### Frontend
+
 The pages are loaded with AJAX, so opening `frontend/index.html` straight from disk
 (`file://`) does not work; the `frontend` folder has to be served over HTTP. Either:
 
 - in VS Code, open the project with the **Live Server** extension and go to
   `/frontend/`, or
-- from the project folder, run `C:\xampp\php\php.exe -S localhost:8080 -t frontend`
-  and open <http://localhost:8080>.
+- from the project folder, run `php -S localhost:8080 -t frontend` and open
+  <http://localhost:8080>.
 
 ## Coming in later milestones
 
 | Milestone | Adds to this README |
 |---|---|
-| 2 | Importing the `.sql` file, creating `backend/config/config.php` from `config.example.php`, and the test accounts |
 | 3 | The link to the Swagger API documentation |
 | 5 | The link to the deployed application |
