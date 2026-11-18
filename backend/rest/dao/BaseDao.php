@@ -36,6 +36,9 @@ class BaseDao
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    // Real server-side prepares: values travel apart from the SQL text instead of being escaped
+                    // into it by PHP, and LIMIT ? accepts a bound number.
+                    PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
         }
@@ -80,6 +83,10 @@ class BaseDao
     public function add($entity)
     {
         $entity = $this->onlyColumns($entity);
+        // Unlike an empty update, an empty insert cannot quietly do nothing: the caller expects a new row back.
+        if (count($entity) === 0) {
+            throw new InvalidArgumentException("Nothing to insert into {$this->tableName}: no writable column was given.");
+        }
         $columns = array_keys($entity);
 
         $this->execute(

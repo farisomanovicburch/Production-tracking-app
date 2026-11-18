@@ -28,6 +28,13 @@ final class BaseDaoTest extends DatabaseTestCase
         $this->assertNotSame(999, $added['id']);
     }
 
+    public function testAddWithoutWritableColumnsThrows(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->dao->add(['nmae' => 'Test PP granulate']);
+    }
+
     public function testGetByIdReturnsNullForAMissingId(): void
     {
         $this->assertNull($this->dao->getById(999999));
