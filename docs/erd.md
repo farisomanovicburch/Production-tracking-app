@@ -3,6 +3,10 @@
 > Matches the database built by
 > [database/production_tracker.sql](../database/production_tracker.sql) (Milestone 2).
 > A picture of the same diagram is in [erd.svg](erd.svg) (and [erd.png](erd.png)).
+> After changing the diagram below, redraw both pictures from it with
+> `@mermaid-js/mermaid-cli@10.9.1` and the default theme, so they keep the same look:
+> `mmdc -i erd.mmd -o erd.svg -b white -I erd` and
+> `mmdc -i erd.mmd -o erd.png -b white -w 3500 -s 2`, where `erd.mmd` is the code block below.
 
 ```mermaid
 erDiagram
