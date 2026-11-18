@@ -24,7 +24,7 @@ USE production_tracker;
 
 -- ---------------------------------------------------------------------
 -- Tables, in foreign-key order: a table comes after every table it points to.
--- Master data (users, machines, products, materials, recipes) is deactivated with
+-- Master data (users, machines, machine parameters, products, materials, recipes) is deactivated with
 -- is_active instead of deleted, so ON DELETE RESTRICT protects the history that points to it.
 -- ---------------------------------------------------------------------
 
@@ -55,6 +55,7 @@ CREATE TABLE machine_parameters (
     name          VARCHAR(100) NOT NULL,
     unit          VARCHAR(20)  NULL,                      -- e.g. rpm, °C; NULL for a plain number
     display_order INT NOT NULL DEFAULT 0,
+    is_active     BOOLEAN NOT NULL DEFAULT TRUE,          -- a parameter that runs already use is deactivated, not deleted
     CONSTRAINT fk_machine_parameters_machine FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE CASCADE,
     CONSTRAINT uq_machine_parameters_name UNIQUE (machine_id, name)
 );
@@ -227,7 +228,7 @@ CREATE TABLE maintenance_records (
     updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_maintenance_records_machine FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE RESTRICT,
     CONSTRAINT fk_maintenance_records_user    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE RESTRICT,
-    CONSTRAINT chk_maintenance_records_ends_after_start CHECK (ended_at >= started_at)
+    CONSTRAINT chk_maintenance_records_ends_after_start CHECK (ended_at > started_at)
 );
 
 -- ---------------------------------------------------------------------

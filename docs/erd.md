@@ -59,6 +59,7 @@ erDiagram
         varchar name "unique per machine"
         varchar unit "nullable, e.g. rpm"
         int display_order
+        boolean is_active "deactivated once runs use it"
     }
 
     products {
@@ -173,7 +174,7 @@ erDiagram
         int user_id FK "who logged it"
         enum maintenance_type "preventive | corrective"
         datetime started_at
-        datetime ended_at "not before started_at"
+        datetime ended_at "after started_at"
         text description "work done"
         text notes "nullable: spare parts"
         datetime created_at
@@ -203,10 +204,16 @@ for the bags that came out.
 - **Ids** are whole numbers (`INT AUTO_INCREMENT`), the same ids the frontend reads from
   addresses such as `#run-detail?id=17`.
 - **Quantities** use `DECIMAL`, not `FLOAT`, so stock added up over months does not drift.
-- **Master data is deactivated, not deleted** (`is_active` on users, machines, products,
-  materials and recipes): old runs keep pointing at the machine, product and recipe they
-  used. Runs, conversions and maintenance records can be deleted; their parameter values
-  and material usages are deleted with them.
+- **Master data is deactivated, not deleted** (`is_active` on users, machines, machine
+  parameters, products, materials and recipes): old runs keep pointing at the machine,
+  parameter, product and recipe they used. Runs, conversions and maintenance records can
+  be deleted; their parameter values and material usages are deleted with them.
+- **History is not a snapshot.** A run points at its recipe, product and machine, not at a
+  copy of their values. Editing a recipe's percentages or a product's size later changes
+  what an old run appears to have used. The amounts actually consumed stay correct,
+  because `material_usages` stores them on the run itself.
+- **Every duration is strict**: a run, a conversion and a maintenance record must end after
+  they start, so a zero-length record is refused.
 - **Scrap of a conversion is not stored**: it is always input minus output.
 - **A run's times are always in this order**: warm-up starts, the run starts, production
   becomes stable, the run ends. The database refuses any other order; warm-up and stable
@@ -224,6 +231,7 @@ the backend services enforce them (Milestone 3):
   conversion machine.
 - A run's product is linked to its machine as an output; a conversion's input and output
   products are linked to its machine as input and output.
+- A run's recipe is linked to the run's product through `recipe_products`.
 - Parameter values belong to parameters of the run's own machine.
 - A recipe's percentages add up to 100.
 - A product has at most one default recipe.

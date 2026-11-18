@@ -16,4 +16,16 @@ final class MachineParameterDaoTest extends DatabaseTestCase
 
         $this->assertSame(['First', 'Second'], array_column($parameters, 'name'));
     }
+
+    public function testAParameterIsActiveByDefaultAndCanBeDeactivated(): void
+    {
+        $dao = new MachineParameterDao();
+        $parameterId = $dao->add(['machine_id' => $this->createMachine('extrusion'), 'name' => 'Screw speed'])['id'];
+
+        $this->assertSame(1, $dao->getById($parameterId)['is_active']);
+
+        $dao->update(['is_active' => 0], $parameterId);
+
+        $this->assertSame(0, $dao->getById($parameterId)['is_active']);
+    }
 }

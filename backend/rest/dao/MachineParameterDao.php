@@ -5,7 +5,7 @@ class MachineParameterDao extends BaseDao
 {
     public function __construct()
     {
-        parent::__construct('machine_parameters', ['machine_id', 'name', 'unit', 'display_order']);
+        parent::__construct('machine_parameters', ['machine_id', 'name', 'unit', 'display_order', 'is_active']);
     }
 
     // The machine setup page and the run form list a machine's parameters in the order the admin chose.
