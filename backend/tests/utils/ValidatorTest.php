@@ -112,6 +112,28 @@ final class ValidatorTest extends TestCase
         $this->assertRejected(fn () => Validator::decimal('100.01', 'percentage', 0, 100), "Field 'percentage' must be at most 100.");
     }
 
+    /* ---------- boolean ---------- */
+
+    // JSON sends true/false, a form or a query string sends "1"/"0".
+    public function testBooleanAcceptsTrueFalseAndOneZero(): void
+    {
+        foreach ([true, false, 1, 0, '1', '0'] as $value) {
+            Validator::boolean($value, 'is_active');
+        }
+        $this->addToAssertionCount(1);
+    }
+
+    public static function notBooleans(): array
+    {
+        return ['yes' => ['yes'], 'two' => [2], 'text true' => ['true']];
+    }
+
+    #[DataProvider('notBooleans')]
+    public function testBooleanRejectsAnythingElse(mixed $value): void
+    {
+        $this->assertRejected(fn () => Validator::boolean($value, 'is_active'), "Field 'is_active' must be true or false.");
+    }
+
     /* ---------- oneOf ---------- */
 
     public function testOneOfAcceptsAnAllowedValue(): void

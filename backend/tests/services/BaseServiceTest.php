@@ -23,6 +23,7 @@ final class MaterialTestService extends BaseService
     // emptyToNull() and normalizeDatetimes() are helpers for child services, so they are protected.
     public function callEmptyToNull($entity, $fields) { return $this->emptyToNull($entity, $fields); }
     public function callNormalizeDatetimes($entity, $fields) { return $this->normalizeDatetimes($entity, $fields); }
+    public function callNormalizeBooleans($entity, $fields) { return $this->normalizeBooleans($entity, $fields); }
 }
 
 final class BaseServiceTest extends DatabaseTestCase
@@ -108,6 +109,26 @@ final class BaseServiceTest extends DatabaseTestCase
         $this->assertSame(0, $this->countRows('materials', 'id', $id));
     }
 
+    // Master data that runs point to is protected by ON DELETE RESTRICT; the client gets a 400 it can act on,
+    // not the database error as a 500.
+    public function testDeleteOfAnEntityStillInUseIsABrokenRule(): void
+    {
+        $materialId = $this->createMaterial();
+        $this->insertRow('material_usages', [
+            'production_run_id' => $this->createRun($this->createMachine('extrusion')),
+            'material_id' => $materialId,
+            'quantity_kg' => 5,
+        ]);
+
+        try {
+            $this->service->delete($materialId);
+            $this->fail('A material used by a run was deleted.');
+        } catch (ValidationException $exception) {
+            $this->assertSame('Material is still in use and cannot be deleted.', $exception->getMessage());
+        }
+        $this->assertSame(1, $this->countRows('materials', 'id', $materialId));
+    }
+
     public function testDeleteOfAnUnknownIdThrowsNotFound(): void
     {
         $this->expectException(NotFoundException::class);
@@ -123,6 +144,17 @@ final class BaseServiceTest extends DatabaseTestCase
         );
 
         $this->assertSame(['supplier' => null, 'min_stock_qty' => null, 'name' => '', 'unit' => 'kg'], $entity);
+    }
+
+    // PDO sends PHP false as an empty string, which a BOOLEAN column in strict mode refuses.
+    public function testNormalizeBooleansTurnsTrueAndFalseIntoOneAndZero(): void
+    {
+        $entity = $this->service->callNormalizeBooleans(
+            ['is_active' => false, 'is_default' => true, 'other' => false, 'is_pinned' => '1', 'is_bad' => 'yes'],
+            ['is_active', 'is_default', 'is_pinned', 'is_bad', 'absent']
+        );
+
+        $this->assertSame(['is_active' => 0, 'is_default' => 1, 'other' => false, 'is_pinned' => 1, 'is_bad' => 'yes'], $entity);
     }
 
     public function testNormalizeDatetimesTurnsTheBrowserFormatIntoTheDatabaseFormat(): void

@@ -13,6 +13,11 @@ class BaseService
     protected $dao;
     // Used in messages, e.g. "Machine not found."
     protected $entityName = 'Entity';
+    // What the client reads when the row cannot be deleted because other rows point to it.
+    protected $inUseMessage = null;
+
+    // MySQL error 1451: ON DELETE RESTRICT refused the delete because other rows still point to this one.
+    private const ROW_IS_REFERENCED = 1451;
 
     // The DAO is passed in instead of created here, so a test can hand the service a different one.
     public function __construct($dao)
@@ -52,10 +57,22 @@ class BaseService
         return $this->dao->getById($id);
     }
 
+    /*
+     * The foreign keys already know whether anything points to the row, so instead of counting first, the delete is
+     * tried and the database's refusal becomes a 400. Counting first would also leave a gap: a run saved between the
+     * count and the delete.
+     */
     public function delete($id)
     {
         $this->getById($id);
-        $this->dao->delete($id);
+        try {
+            $this->dao->delete($id);
+        } catch (PDOException $exception) {
+            if (($exception->errorInfo[1] ?? null) !== self::ROW_IS_REFERENCED) {
+                throw $exception;
+            }
+            throw new ValidationException($this->inUseMessage ?? "{$this->entityName} is still in use and cannot be deleted.");
+        }
     }
 
     /*
@@ -72,6 +89,23 @@ class BaseService
         foreach ($fields as $field) {
             if (array_key_exists($field, $entity) && is_string($entity[$field]) && trim($entity[$field]) === '') {
                 $entity[$field] = null;
+            }
+        }
+        return $entity;
+    }
+
+    // PDO sends PHP's false as an empty string, which a BOOLEAN column refuses, so flags are stored as 1 and 0.
+    // Values that are not a flag are left alone for Validator::boolean() to reject.
+    protected function normalizeBooleans($entity, $fields)
+    {
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $entity)) {
+                continue;
+            }
+            if (in_array($entity[$field], [true, 1, '1'], true)) {
+                $entity[$field] = 1;
+            } elseif (in_array($entity[$field], [false, 0, '0'], true)) {
+                $entity[$field] = 0;
             }
         }
         return $entity;

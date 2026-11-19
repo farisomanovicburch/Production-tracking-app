@@ -7,20 +7,26 @@ use PHPUnit\Framework\TestCase;
 abstract class ApiTestCase extends TestCase
 {
     // One server for the whole test run: starting php -S per test would add a second to every test.
-    private static $server = null;
     private static $baseUrl = null;
+    private static $servers = [];
+    private static $openApi = null;
 
     public static function setUpBeforeClass(): void
     {
-        if (self::$server === null) {
-            self::startServer();
+        if (self::$baseUrl === null) {
+            self::$baseUrl = self::startServer();
+            register_shutdown_function(function () {
+                foreach (self::$servers as $server) {
+                    proc_terminate($server);
+                }
+            });
         }
     }
 
     /** @return array{status: int, body: array|null, raw: string} */
-    protected function request(string $method, string $path, ?array $body = null): array
+    protected function request(string $method, string $path, ?array $body = null, ?string $baseUrl = null): array
     {
-        $curl = curl_init(self::$baseUrl . $path);
+        $curl = curl_init(($baseUrl ?? self::$baseUrl) . $path);
         $headers = ['Accept: application/json'];
         if ($body !== null) {
             $headers[] = 'Content-Type: application/json';
@@ -38,28 +44,38 @@ abstract class ApiTestCase extends TestCase
         return ['status' => $status, 'body' => json_decode((string) $raw, true), 'raw' => (string) $raw];
     }
 
-    private static function startServer(): void
+    // The documentation must not lie: every status a route really answers with has to be listed in Swagger.
+    protected function assertDocumented(string $method, string $pathTemplate, int $status): void
+    {
+        self::$openApi ??= $this->request('GET', '/backend/public/v1/docs/swagger.php')['body'];
+        $responses = self::$openApi['paths'][$pathTemplate][strtolower($method)]['responses'] ?? [];
+
+        $this->assertArrayHasKey((string) $status, $responses, "$method $pathTemplate does not document $status.");
+    }
+
+    // A second server with different settings, e.g. a database that does not exist. Settings come from
+    // environment variables because Config reads those before its defaults.
+    protected static function startServer(array $environment = []): string
     {
         // Port 0 lets the operating system pick a free port, so a server already running on 8000 never clashes.
         $probe = stream_socket_server('tcp://127.0.0.1:0');
         $port = (int) substr(strrchr(stream_socket_get_name($probe, false), ':'), 1);
         fclose($probe);
 
-        $projectRoot = realpath(__DIR__ . '/../../..');
         // The server's own errors go to a file: if they went to a pipe nobody reads, the server would block.
-        $log = sys_get_temp_dir() . '/production-tracker-test-server.log';
-        self::$server = proc_open(
+        $log = sys_get_temp_dir() . "/production-tracker-test-server-$port.log";
+        self::$servers[] = proc_open(
             [PHP_BINARY, '-S', "127.0.0.1:$port", 'server.php'],
             [1 => ['file', $log, 'w'], 2 => ['file', $log, 'a']],
             $pipes,
-            $projectRoot
+            realpath(__DIR__ . '/../../..'),
+            $environment === [] ? null : array_merge(getenv(), $environment)
         );
-        self::$baseUrl = "http://127.0.0.1:$port";
 
         $deadline = microtime(true) + 5;
         while (!@fsockopen('127.0.0.1', $port) && microtime(true) < $deadline) {
             usleep(50000);
         }
-        register_shutdown_function(fn () => proc_terminate(self::$server));
+        return "http://127.0.0.1:$port";
     }
 }

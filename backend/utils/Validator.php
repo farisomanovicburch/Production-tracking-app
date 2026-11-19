@@ -46,6 +46,14 @@ class Validator
         self::range((float) $value, $field, $min, $max);
     }
 
+    // JSON sends true/false, a form or a query string "1"/"0". Anything else ("yes", 2) is a mistake, not a flag.
+    public static function boolean($value, $field)
+    {
+        if (!in_array($value, [true, false, 1, 0, '1', '0'], true)) {
+            throw new ValidationException("Field '$field' must be true or false.");
+        }
+    }
+
     // Strict comparison: an ENUM column only accepts the exact text.
     public static function oneOf($value, $field, $allowed)
     {
