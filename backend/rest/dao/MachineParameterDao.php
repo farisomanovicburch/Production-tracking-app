@@ -16,4 +16,13 @@ class MachineParameterDao extends BaseDao
             ['machine_id' => $machineId]
         );
     }
+
+    // New runs and conversions accept values only for these; the setup page uses getByMachine to show all of them.
+    public function getActiveByMachine($machineId)
+    {
+        return $this->query(
+            'SELECT * FROM machine_parameters WHERE machine_id = :machine_id AND is_active = TRUE ORDER BY display_order, id',
+            ['machine_id' => $machineId]
+        );
+    }
 }
