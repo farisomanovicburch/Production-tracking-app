@@ -77,4 +77,66 @@ final class BaseDaoTest extends DatabaseTestCase
         $this->assertSame(1, $this->dao->delete($id));
         $this->assertNull($this->dao->getById($id));
     }
+
+    /* ---------- transactions (this test already runs inside a transaction, so these use savepoints) ---------- */
+
+    public function testRollBackUndoesOnlyTheWorkSinceBeginTransaction(): void
+    {
+        $before = $this->dao->add(['name' => 'Test before the transaction'])['id'];
+
+        $this->dao->beginTransaction();
+        $inside = $this->dao->add(['name' => 'Test inside the transaction'])['id'];
+        $this->dao->rollBack();
+
+        $this->assertNull($this->dao->getById($inside));
+        $this->assertNotNull($this->dao->getById($before));
+    }
+
+    public function testCommitKeepsTheWorkOfTheTransaction(): void
+    {
+        $this->dao->beginTransaction();
+        $id = $this->dao->add(['name' => 'Test committed'])['id'];
+        $this->dao->commit();
+
+        $this->assertNotNull($this->dao->getById($id));
+    }
+
+    public function testANestedRollBackLeavesTheOuterTransactionUsable(): void
+    {
+        $this->dao->beginTransaction();
+        $outer = $this->dao->add(['name' => 'Test outer'])['id'];
+        $this->dao->beginTransaction();
+        $inner = $this->dao->add(['name' => 'Test inner'])['id'];
+        $this->dao->rollBack();
+        $this->dao->commit();
+
+        $this->assertNull($this->dao->getById($inner));
+        $this->assertNotNull($this->dao->getById($outer));
+    }
+
+    public function testTransactionCommitsWhatTheWorkDidAndReturnsItsResult(): void
+    {
+        $id = $this->dao->transaction(fn () => $this->dao->add(['name' => 'Test in transaction()'])['id']);
+
+        $this->assertNotNull($this->dao->getById($id));
+    }
+
+    // All or nothing: the run is saved together with its stock change, or neither is.
+    public function testTransactionRollsBackAndRethrowsWhenTheWorkFails(): void
+    {
+        $failure = new RuntimeException('Second write failed.');
+        $writtenId = null;
+
+        try {
+            $this->dao->transaction(function () use (&$writtenId, $failure) {
+                $writtenId = $this->dao->add(['name' => 'Test half-done work'])['id'];
+                throw $failure;
+            });
+            $this->fail('The failure was swallowed.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame($failure, $exception);
+        }
+
+        $this->assertNull($this->dao->getById($writtenId));
+    }
 }
