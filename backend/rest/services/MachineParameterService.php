@@ -39,6 +39,13 @@ class MachineParameterService extends BaseService
         return parent::add($parameter);
     }
 
+    // The inherited add() would skip the machine check, the allow-list and the display order. A mistake in the
+    // code, not in the user's input: LogicException (500, logged), not a 400.
+    public function add($parameter)
+    {
+        throw new LogicException('Use addToMachine(): the machine comes from the URL.');
+    }
+
     public function update($parameter, $id)
     {
         return parent::update($this->prepare($parameter), $id);

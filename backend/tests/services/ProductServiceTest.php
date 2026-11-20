@@ -104,6 +104,25 @@ final class ProductServiceTest extends DatabaseTestCase
         $this->assertSame(0, $this->service->update($this->newProduct(['is_active' => false]), $id)['is_active']);
     }
 
+    // Runs and conversions store quantities in the product's unit: 500 kg of film would turn into 500 bags.
+    public function testUpdateCannotChangeTheUnit(): void
+    {
+        $id = $this->service->add($this->newProduct(['unit' => 'kg']))['id'];
+
+        $this->assertRejected(
+            fn () => $this->service->update($this->newProduct(['unit' => 'pcs']), $id),
+            'The unit cannot be changed. Add a new product instead.'
+        );
+    }
+
+    // The edit form may send the whole product back, unit included: the same unit is not a change.
+    public function testUpdateWithTheSameUnitIsAccepted(): void
+    {
+        $id = $this->service->add($this->newProduct(['unit' => 'pcs']))['id'];
+
+        $this->assertSame('pcs', $this->service->update($this->newProduct(['unit' => 'pcs']), $id)['unit']);
+    }
+
     // Clearing a field in the form must clear it in the database, not keep the old value.
     public function testUpdateCanClearADimension(): void
     {

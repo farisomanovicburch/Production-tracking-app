@@ -42,7 +42,8 @@ class ProductPaths
         path: '/products/{id}',
         tags: ['products'],
         summary: 'Update a product',
-        description: 'Send an empty value to clear an optional field. Set is_active to false to stop new runs from using the product.',
+        description: 'The unit cannot be changed (leave it out or send the same value). Send an empty value to clear an optional field. ' .
+            'Set is_active to false to stop new runs from using the product.',
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ProductInput')),
         responses: [

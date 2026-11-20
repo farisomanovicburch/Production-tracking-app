@@ -12,6 +12,16 @@ final class RecipeProductDaoTest extends DatabaseTestCase
         $this->dao = new RecipeProductDao();
     }
 
+    public function testGetByRecipeReturnsOnlyThatRecipesProductsWithTheirNames(): void
+    {
+        $recipeId = $this->createRecipe();
+        $this->insertRow('recipe_products', ['recipe_id' => $recipeId, 'product_id' => $this->createProduct('Test film B')]);
+        $this->insertRow('recipe_products', ['recipe_id' => $recipeId, 'product_id' => $this->createProduct('Test film A')]);
+        $this->insertRow('recipe_products', ['recipe_id' => $this->createRecipe(), 'product_id' => $this->createProduct('Other film')]);
+
+        $this->assertSame(['Test film A', 'Test film B'], array_column($this->dao->getByRecipe($recipeId), 'product_name'));
+    }
+
     public function testGetLinkFindsTheRecipeLinkedToTheProduct(): void
     {
         $recipeId = $this->createRecipe();

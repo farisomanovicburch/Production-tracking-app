@@ -8,6 +8,19 @@ class RecipeProductDao extends BaseDao
         parent::__construct('recipe_products', ['recipe_id', 'product_id', 'is_default']);
     }
 
+    // Product names come with the links (JOIN), so the recipe page needs one request, not one per product.
+    public function getByRecipe($recipeId)
+    {
+        return $this->query(
+            'SELECT rp.*, p.code AS product_code, p.name AS product_name
+             FROM recipe_products rp
+             JOIN products p ON p.id = rp.product_id
+             WHERE rp.recipe_id = :recipe_id
+             ORDER BY p.name',
+            ['recipe_id' => $recipeId]
+        );
+    }
+
     public function getLink($recipeId, $productId)
     {
         return $this->queryUnique(

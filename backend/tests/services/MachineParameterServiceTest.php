@@ -132,6 +132,15 @@ final class MachineParameterServiceTest extends DatabaseTestCase
         $this->assertSame(self::NAME, $parameter['name']);
     }
 
+    // BaseService::add() would skip addToMachine(): no "Machine not found." check, no allow-list, no display order.
+    public function testAddWithoutTheMachineFromTheUrlIsAProgrammingError(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Use addToMachine(): the machine comes from the URL.');
+
+        $this->service->add(['machine_id' => $this->createMachine('extrusion'), 'name' => self::NAME]);
+    }
+
     /* ---------- update ---------- */
 
     public function testUpdateLetsAParameterKeepItsOwnName(): void

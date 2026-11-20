@@ -126,6 +126,30 @@ final class MachineProductServiceTest extends DatabaseTestCase
         $this->assertSame($machineId, $link['machine_id']);
     }
 
+    /* ---------- methods inherited from BaseService that would skip the rules ---------- */
+
+    // BaseService::add() would skip addToMachine(): no "Machine not found." check and no allow-list.
+    public function testAddWithoutTheMachineFromTheUrlIsAProgrammingError(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Use addToMachine(): the machine comes from the URL.');
+
+        $this->service->add(['machine_id' => $this->createMachine('extrusion'), 'product_id' => $this->createProduct(), 'role' => 'output']);
+    }
+
+    // A link is removed and added again instead. BaseService::update() has no allow-list, so it could even move the
+    // link to another machine.
+    public function testALinkCannotBeUpdated(): void
+    {
+        $productId = $this->createProduct();
+        $linkId = $this->service->addToMachine($this->createMachine('extrusion'), ['product_id' => $productId, 'role' => 'output'])['id'];
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('A machine product link is not edited: remove it and add a new one.');
+
+        $this->service->update(['product_id' => $productId, 'role' => 'output'], $linkId);
+    }
+
     /* ---------- delete ---------- */
 
     public function testDeleteRemovesTheLinkButNotTheProduct(): void

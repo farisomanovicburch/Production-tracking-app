@@ -55,6 +55,11 @@ class ProductService extends BaseService
             Validator::boolean($product['is_active'], 'is_active');
         }
 
+        // Runs and conversions store quantities in this unit: switching kg to pcs would turn 500 kg into 500 bags.
+        if ($id !== null && array_key_exists('unit', $product) && $product['unit'] !== $this->dao->getById($id)['unit']) {
+            throw new ValidationException('The unit cannot be changed. Add a new product instead.');
+        }
+
         $existing = $this->dao->getByCode($product['code']);
         if ($existing && $existing['id'] != $id) {
             throw new ValidationException('A product with this code already exists.');

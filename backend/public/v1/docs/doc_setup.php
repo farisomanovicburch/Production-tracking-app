@@ -201,4 +201,84 @@ use OpenApi\Attributes as OA;
     required: ['quantity_kg'],
     properties: [new OA\Property(property: 'quantity_kg', type: 'number', minimum: 0.001, example: 25.5, description: 'Added to the stock; more than 0')]
 )]
+/* ---------- recipes ---------- */
+#[OA\Schema(
+    schema: 'RecipeInput',
+    required: ['name'],
+    properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Blue film', description: 'Unique'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Mix the masterbatch first.'),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true, description: 'Default: true')
+    ]
+)]
+#[OA\Schema(
+    schema: 'Recipe',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 4),
+        new OA\Property(property: 'name', type: 'string', example: 'Blue film'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Mix the masterbatch first.'),
+        new OA\Property(property: 'is_active', type: 'integer', enum: [0, 1], example: 1)
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeItemInput',
+    required: ['material_id', 'percentage'],
+    properties: [
+        new OA\Property(property: 'material_id', type: 'integer', example: 2, description: 'Not already in the recipe'),
+        new OA\Property(property: 'percentage', type: 'number', minimum: 0.01, maximum: 100, example: 95, description: 'All items of a recipe may add up to at most 100')
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeItem',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 9),
+        new OA\Property(property: 'recipe_id', type: 'integer', example: 4),
+        new OA\Property(property: 'material_id', type: 'integer', example: 2),
+        new OA\Property(property: 'percentage', type: 'string', example: '95.00')
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeItemWithName',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/RecipeItem'),
+        new OA\Schema(properties: [new OA\Property(property: 'material_name', type: 'string', example: 'HDPE granulate')])
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeProductInput',
+    required: ['product_id'],
+    properties: [
+        new OA\Property(property: 'product_id', type: 'integer', example: 1, description: 'Only when linking; cannot be changed afterwards'),
+        new OA\Property(
+            property: 'is_default',
+            type: 'boolean',
+            example: false,
+            description: "Default: false. true makes this the product's default recipe and unsets its previous default."
+        )
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeProductUpdate',
+    required: ['is_default'],
+    properties: [new OA\Property(property: 'is_default', type: 'boolean', example: true, description: "true unsets the product's previous default recipe")]
+)]
+#[OA\Schema(
+    schema: 'RecipeProduct',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 3),
+        new OA\Property(property: 'recipe_id', type: 'integer', example: 4),
+        new OA\Property(property: 'product_id', type: 'integer', example: 1),
+        new OA\Property(property: 'is_default', type: 'integer', enum: [0, 1], example: 0)
+    ]
+)]
+#[OA\Schema(
+    schema: 'RecipeProductWithName',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/RecipeProduct'),
+        new OA\Schema(properties: [
+            new OA\Property(property: 'product_code', type: 'string', example: 'P-100'),
+            new OA\Property(property: 'product_name', type: 'string', example: 'LDPE film, clear')
+        ])
+    ]
+)]
 class OpenApiSpec {}

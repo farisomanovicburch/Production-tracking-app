@@ -42,6 +42,22 @@ class MachineProductService extends BaseService
         return parent::add($link);
     }
 
+    /*
+     * add() and update() are inherited from BaseService and public, but here they would skip the rules: add() the
+     * machine check and the allow-list, update() the allow-list too, so it could move a link to another machine.
+     * Calling them is a mistake in the code, not in the user's input, so they throw a LogicException (500, logged)
+     * instead of a 400.
+     */
+    public function add($link)
+    {
+        throw new LogicException('Use addToMachine(): the machine comes from the URL.');
+    }
+
+    public function update($link, $id)
+    {
+        throw new LogicException('A machine product link is not edited: remove it and add a new one.');
+    }
+
     protected function validate($link, $id = null)
     {
         Validator::required($link, ['product_id', 'role']);
