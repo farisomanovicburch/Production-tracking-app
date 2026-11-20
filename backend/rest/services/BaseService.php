@@ -83,6 +83,18 @@ class BaseService
     {
     }
 
+    // A user cannot see the space in " EX-01", but the database would store it and compare with it: spaces around
+    // a name or code are typing noise.
+    protected function trimStrings($entity, $fields)
+    {
+        foreach ($fields as $field) {
+            if (isset($entity[$field]) && is_string($entity[$field])) {
+                $entity[$field] = trim($entity[$field]);
+            }
+        }
+        return $entity;
+    }
+
     // A form sends "" for an empty optional field, but "" is not a valid number or date: the column wants NULL.
     protected function emptyToNull($entity, $fields)
     {

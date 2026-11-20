@@ -28,16 +28,6 @@ final class UserServiceTest extends DatabaseTestCase
         return $statement->fetchColumn();
     }
 
-    private function assertRejected(callable $action, string $message): void
-    {
-        try {
-            $action();
-            $this->fail("Accepted, expected: $message");
-        } catch (ValidationException $exception) {
-            $this->assertSame($message, $exception->getMessage());
-        }
-    }
-
     /* ---------- add ---------- */
 
     public function testAddStoresOnlyABcryptHashOfThePassword(): void

@@ -24,6 +24,7 @@ final class MaterialTestService extends BaseService
     public function callEmptyToNull($entity, $fields) { return $this->emptyToNull($entity, $fields); }
     public function callNormalizeDatetimes($entity, $fields) { return $this->normalizeDatetimes($entity, $fields); }
     public function callNormalizeBooleans($entity, $fields) { return $this->normalizeBooleans($entity, $fields); }
+    public function callTrimStrings($entity, $fields) { return $this->trimStrings($entity, $fields); }
 }
 
 final class BaseServiceTest extends DatabaseTestCase
@@ -155,6 +156,17 @@ final class BaseServiceTest extends DatabaseTestCase
         );
 
         $this->assertSame(['is_active' => 0, 'is_default' => 1, 'other' => false, 'is_pinned' => 1, 'is_bad' => 'yes'], $entity);
+    }
+
+    // Only the named fields: spaces inside notes may be intended. Non-text values are left for the validator.
+    public function testTrimStringsTrimsOnlyTheNamedTextFields(): void
+    {
+        $entity = $this->service->callTrimStrings(
+            ['name' => '  LDPE ', 'notes' => ' keep ', 'stock_qty' => 5],
+            ['name', 'stock_qty', 'supplier']
+        );
+
+        $this->assertSame(['name' => 'LDPE', 'notes' => ' keep ', 'stock_qty' => 5], $entity);
     }
 
     public function testNormalizeDatetimesTurnsTheBrowserFormatIntoTheDatabaseFormat(): void
