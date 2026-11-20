@@ -14,6 +14,16 @@ final class MaterialDaoTest extends DatabaseTestCase
         $this->materialId = $this->insertRow('materials', ['name' => 'Test material', 'stock_qty' => '10.000']);
     }
 
+    public function testGetByNameFindsTheMaterialInAnyCase(): void
+    {
+        $this->assertSame($this->materialId, $this->dao->getByName('TEST MATERIAL')['id']);
+    }
+
+    public function testGetByNameReturnsNullForAnUnknownName(): void
+    {
+        $this->assertNull($this->dao->getByName('No such material'));
+    }
+
     public function testChangeStockAddsAPositiveAmount(): void
     {
         $this->dao->changeStock($this->materialId, '2.5');

@@ -137,4 +137,68 @@ use OpenApi\Attributes as OA;
         ])
     ]
 )]
+/* ---------- products and materials (DECIMAL columns come back as strings, e.g. "500.000") ---------- */
+#[OA\Schema(
+    schema: 'ProductInput',
+    required: ['code', 'name'],
+    properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'P-120', description: 'Unique, 2 to 20 characters'),
+        new OA\Property(property: 'name', type: 'string', example: 'LDPE film, blue'),
+        new OA\Property(property: 'width_mm', type: 'integer', nullable: true, minimum: 1, example: 1000),
+        new OA\Property(property: 'thickness_um', type: 'integer', nullable: true, minimum: 1, example: 50),
+        new OA\Property(property: 'length_m', type: 'number', nullable: true, minimum: 0.01, example: 0.5, description: 'For bags: length of one piece'),
+        new OA\Property(property: 'unit', type: 'string', enum: ['kg', 'pcs'], example: 'kg', description: 'Default: kg. Film is counted in kg, bags in pieces.'),
+        new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Blue masterbatch 2 %'),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true, description: 'Default: true')
+    ]
+)]
+#[OA\Schema(
+    schema: 'Product',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 5),
+        new OA\Property(property: 'code', type: 'string', example: 'P-120'),
+        new OA\Property(property: 'name', type: 'string', example: 'LDPE film, blue'),
+        new OA\Property(property: 'width_mm', type: 'integer', nullable: true, example: 1000),
+        new OA\Property(property: 'thickness_um', type: 'integer', nullable: true, example: 50),
+        new OA\Property(property: 'length_m', type: 'string', nullable: true, example: '0.50'),
+        new OA\Property(property: 'unit', type: 'string', enum: ['kg', 'pcs'], example: 'kg'),
+        new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Blue masterbatch 2 %'),
+        new OA\Property(property: 'is_active', type: 'integer', enum: [0, 1], example: 1)
+    ]
+)]
+#[OA\Schema(
+    schema: 'MaterialInput',
+    required: ['name'],
+    properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'LLDPE granulate', description: 'Unique'),
+        new OA\Property(property: 'unit', type: 'string', example: 'kg', description: 'Default: kg'),
+        new OA\Property(property: 'supplier', type: 'string', nullable: true, example: 'Supplier D'),
+        new OA\Property(
+            property: 'stock_qty',
+            type: 'number',
+            minimum: 0,
+            example: 250,
+            description: 'Only when creating (default 0). Ignored on update: use PUT /materials/{id}/delivery.'
+        ),
+        new OA\Property(property: 'min_stock_qty', type: 'number', nullable: true, minimum: 0, example: 100, description: 'Leave empty for no low-stock warning'),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true, description: 'Default: true')
+    ]
+)]
+#[OA\Schema(
+    schema: 'Material',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 6),
+        new OA\Property(property: 'name', type: 'string', example: 'LLDPE granulate'),
+        new OA\Property(property: 'unit', type: 'string', example: 'kg'),
+        new OA\Property(property: 'supplier', type: 'string', nullable: true, example: 'Supplier D'),
+        new OA\Property(property: 'stock_qty', type: 'string', example: '250.000'),
+        new OA\Property(property: 'min_stock_qty', type: 'string', nullable: true, example: '100.000'),
+        new OA\Property(property: 'is_active', type: 'integer', enum: [0, 1], example: 1)
+    ]
+)]
+#[OA\Schema(
+    schema: 'Delivery',
+    required: ['quantity_kg'],
+    properties: [new OA\Property(property: 'quantity_kg', type: 'number', minimum: 0.001, example: 25.5, description: 'Added to the stock; more than 0')]
+)]
 class OpenApiSpec {}

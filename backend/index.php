@@ -15,12 +15,16 @@ require_once __DIR__ . '/rest/services/UserService.php';
 require_once __DIR__ . '/rest/services/MachineService.php';
 require_once __DIR__ . '/rest/services/MachineParameterService.php';
 require_once __DIR__ . '/rest/services/MachineProductService.php';
+require_once __DIR__ . '/rest/services/ProductService.php';
+require_once __DIR__ . '/rest/services/MaterialService.php';
 
 // Each service is created once, on first use; a route gets it with Flight::userService() instead of `new`.
 Flight::register('userService', 'UserService');
 Flight::register('machineService', 'MachineService');
 Flight::register('machineParameterService', 'MachineParameterService');
 Flight::register('machineProductService', 'MachineProductService');
+Flight::register('productService', 'ProductService');
+Flight::register('materialService', 'MaterialService');
 
 /*
  * The one place that turns an exception into an answer, so no route needs a try/catch.
@@ -66,5 +70,7 @@ require_once __DIR__ . '/rest/routes/UserRoutes.php';
 require_once __DIR__ . '/rest/routes/MachineRoutes.php';
 require_once __DIR__ . '/rest/routes/MachineParameterRoutes.php';
 require_once __DIR__ . '/rest/routes/MachineProductRoutes.php';
+require_once __DIR__ . '/rest/routes/ProductRoutes.php';
+require_once __DIR__ . '/rest/routes/MaterialRoutes.php';
 
 Flight::start();
