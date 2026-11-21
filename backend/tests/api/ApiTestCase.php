@@ -82,6 +82,15 @@ abstract class ApiTestCase extends TestCase
         ];
     }
 
+    // A stand-in for Open-Meteo (tests/fixtures/fake-open-meteo.php), started once and shared by the weather tests.
+    private static $fakeOpenMeteoUrl = null;
+
+    protected static function fakeOpenMeteoUrl(): string
+    {
+        self::$fakeOpenMeteoUrl ??= self::startServer([], 'backend/tests/fixtures/fake-open-meteo.php');
+        return self::$fakeOpenMeteoUrl;
+    }
+
     // A valid new run for a setup from createRunSetup(): 10 kg of the first material, nothing of the second.
     protected function runBody(array $setup, array $overrides = []): array
     {
@@ -135,8 +144,9 @@ abstract class ApiTestCase extends TestCase
     }
 
     // A second server with different settings, e.g. a database that does not exist. Settings come from
-    // environment variables because Config reads those before its defaults.
-    protected static function startServer(array $environment = []): string
+    // environment variables because Config reads those before its defaults. $router is the script that answers
+    // every request (relative to the repository root): the app's server.php, or a fake external API.
+    protected static function startServer(array $environment = [], string $router = 'server.php'): string
     {
         // Port 0 lets the operating system pick a free port, so a server already running on 8000 never clashes.
         $probe = stream_socket_server('tcp://127.0.0.1:0');
@@ -146,7 +156,7 @@ abstract class ApiTestCase extends TestCase
         // The server's own errors go to a file: if they went to a pipe nobody reads, the server would block.
         $log = sys_get_temp_dir() . "/production-tracker-test-server-$port.log";
         self::$servers[] = proc_open(
-            [PHP_BINARY, '-S', "127.0.0.1:$port", 'server.php'],
+            [PHP_BINARY, '-S', "127.0.0.1:$port", $router],
             [1 => ['file', $log, 'w'], 2 => ['file', $log, 'a']],
             $pipes,
             realpath(__DIR__ . '/../../..'),

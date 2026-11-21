@@ -534,4 +534,48 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'user_name', type: 'string', example: 'Demo Operator')
     ]
 )]
+/* ---------- weather (external API: Open-Meteo) ---------- */
+#[OA\Schema(
+    schema: 'WeatherHour',
+    properties: [
+        new OA\Property(property: 'time', type: 'string', example: '2026-11-21T15:00', description: "Local time of the factory's location"),
+        new OA\Property(property: 'temperature_c', type: 'number', example: 15.1),
+        new OA\Property(property: 'weather_code', type: 'integer', example: 1, description: 'WMO weather interpretation code'),
+        new OA\Property(
+            property: 'condition',
+            type: 'string',
+            enum: ['clear', 'partly-cloudy', 'cloudy', 'fog', 'drizzle', 'rain', 'snow', 'thunderstorm', 'unknown'],
+            example: 'partly-cloudy',
+            description: 'The code grouped, for choosing an icon'
+        ),
+        new OA\Property(property: 'description', type: 'string', example: 'Mainly clear')
+    ]
+)]
+#[OA\Schema(
+    schema: 'Weather',
+    properties: [
+        new OA\Property(property: 'location', type: 'string', example: 'Sarajevo'),
+        new OA\Property(
+            property: 'current',
+            allOf: [
+                new OA\Schema(ref: '#/components/schemas/WeatherHour'),
+                new OA\Schema(properties: [
+                    new OA\Property(property: 'feels_like_c', type: 'number', example: 12.1),
+                    new OA\Property(property: 'humidity_percent', type: 'integer', example: 62),
+                    new OA\Property(property: 'wind_speed_ms', type: 'number', example: 3.1)
+                ])
+            ]
+        ),
+        new OA\Property(property: 'next_hours', type: 'array', description: 'Four forecasts, three hours apart', items: new OA\Items(ref: '#/components/schemas/WeatherHour')),
+        new OA\Property(property: 'thunderstorm_expected', type: 'boolean', example: false, description: 'A thunderstorm now or in any of the next 12 hours'),
+        new OA\Property(
+            property: 'attribution',
+            description: 'Must be shown, as a link, next to the weather (CC BY 4.0)',
+            properties: [
+                new OA\Property(property: 'text', type: 'string', example: 'Weather data by Open-Meteo.com'),
+                new OA\Property(property: 'url', type: 'string', example: 'https://open-meteo.com/')
+            ]
+        )
+    ]
+)]
 class OpenApiSpec {}
