@@ -4,8 +4,8 @@ require_once __DIR__ . '/../dao/MaterialDao.php';
 
 /*
  * Stock is set once, when a material is created (the count on the day the app starts being used). After that it
- * changes only through a delivery (+) and through production runs (-, commit 7), so every kilogram has a reason.
- * An edit form that could type in a new stock number would hide losses and mistakes.
+ * changes only through a delivery (+) and through production runs (takeStock() and returnStock()), so every
+ * kilogram has a reason. An edit form that could type in a new stock number would hide losses and mistakes.
  */
 class MaterialService extends BaseService
 {
@@ -47,6 +47,36 @@ class MaterialService extends BaseService
         // cannot overwrite each other's result.
         $this->dao->changeStock($id, $delivery['quantity_kg']);
         return $this->dao->getById($id);
+    }
+
+    /*
+     * Production takes material out of stock. The check runs before the write so the user reads which material is
+     * short and by how much; the CHECK constraint (stock_qty >= 0) stays as the last guard, e.g. for two runs saved
+     * at the same moment. Amounts are compared in grams (whole numbers), so 0.1 + 0.2 cannot miss by a rounding error.
+     */
+    public function takeStock($id, $quantityKg)
+    {
+        $material = $this->getById($id);
+        if (self::grams($material['stock_qty']) < self::grams($quantityKg)) {
+            throw new ValidationException(sprintf(
+                'Not enough %s in stock: %s kg left, %s kg needed.',
+                $material['name'],
+                $material['stock_qty'],
+                number_format((float) $quantityKg, 3, '.', '')
+            ));
+        }
+        $this->dao->changeStock($id, '-' . number_format((float) $quantityKg, 3, '.', ''));
+    }
+
+    // A deleted run or a smaller usage puts the material back on the shelf.
+    public function returnStock($id, $quantityKg)
+    {
+        $this->dao->changeStock($id, number_format((float) $quantityKg, 3, '.', ''));
+    }
+
+    public static function grams($kg)
+    {
+        return (int) round((float) $kg * 1000);
     }
 
     protected function validate($material, $id = null)

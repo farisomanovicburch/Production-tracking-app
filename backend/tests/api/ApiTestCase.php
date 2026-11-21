@@ -53,6 +53,51 @@ abstract class ApiTestCase extends TestCase
         $this->assertArrayHasKey((string) $status, $responses, "$method $pathTemplate does not document $status.");
     }
 
+    /*
+     * Everything a production run needs, created through the API under a code of its own: route tests are not
+     * rolled back, so a run test that used the sample data would change the stock other tests read.
+     * The recipe is 90 % material_id + 10 % second_material_id, both with 1000 kg in stock.
+     */
+    protected function createRunSetup(string $code): array
+    {
+        $machineId = $this->request('POST', '/backend/machines', ['name' => "Route extruder $code", 'code' => "RX-$code", 'machine_type' => 'extrusion'])['body']['id'];
+        $parameterId = $this->request('POST', "/backend/machines/$machineId/parameters", ['name' => 'Route zone'])['body']['id'];
+        $productId = $this->request('POST', '/backend/products', ['code' => "RP-$code", 'name' => "Route film $code"])['body']['id'];
+        $this->request('POST', "/backend/machines/$machineId/products", ['product_id' => $productId, 'role' => 'output']);
+
+        $materialId = $this->request('POST', '/backend/materials', ['name' => "Route granulate $code", 'stock_qty' => 1000])['body']['id'];
+        $secondMaterialId = $this->request('POST', '/backend/materials', ['name' => "Route additive $code", 'stock_qty' => 1000])['body']['id'];
+        $recipeId = $this->request('POST', '/backend/recipes', ['name' => "Route run recipe $code"])['body']['id'];
+        $this->request('POST', "/backend/recipes/$recipeId/items", ['material_id' => $materialId, 'percentage' => 90]);
+        $this->request('POST', "/backend/recipes/$recipeId/items", ['material_id' => $secondMaterialId, 'percentage' => 10]);
+        $this->request('POST', "/backend/recipes/$recipeId/products", ['product_id' => $productId]);
+
+        $userId = $this->request('POST', '/backend/users', [
+            'full_name' => "Route operator $code", 'email' => strtolower("route.$code@example.com"), 'password' => 'secret123',
+        ])['body']['id'];
+
+        return [
+            'machine_id' => $machineId, 'parameter_id' => $parameterId, 'product_id' => $productId, 'recipe_id' => $recipeId,
+            'material_id' => $materialId, 'second_material_id' => $secondMaterialId, 'user_id' => $userId,
+        ];
+    }
+
+    // A valid new run for a setup from createRunSetup(): 10 kg of the first material, nothing of the second.
+    protected function runBody(array $setup, array $overrides = []): array
+    {
+        return array_merge([
+            'machine_id' => $setup['machine_id'],
+            'product_id' => $setup['product_id'],
+            'recipe_id' => $setup['recipe_id'],
+            'user_id' => $setup['user_id'],
+            'started_at' => '2026-11-02T06:00',
+            'ended_at' => '2026-11-02T14:00',
+            'quantity_produced' => 500,
+            'parameter_values' => [['machine_parameter_id' => $setup['parameter_id'], 'value' => 180]],
+            'material_usages' => [['material_id' => $setup['material_id'], 'quantity_kg' => 10]],
+        ], $overrides);
+    }
+
     // A second server with different settings, e.g. a database that does not exist. Settings come from
     // environment variables because Config reads those before its defaults.
     protected static function startServer(array $environment = []): string

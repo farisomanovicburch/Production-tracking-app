@@ -7,7 +7,7 @@ require_once __DIR__ . '/../dao/MaterialDao.php';
 /*
  * The materials of a recipe and their share in percent. The shares may never add up to more than 100 %; a recipe
  * whose shares add up to less is still being written, and only a complete one (exactly 100 %) can be used in a
- * production run (checked in commit 7).
+ * production run (ProductionRunService checks it with totalPercentage()).
  */
 class RecipeItemService extends BaseService
 {
@@ -76,6 +76,13 @@ class RecipeItemService extends BaseService
             $shown = number_format($total / 100, 2, '.', '');
             throw new ValidationException("The materials of this recipe would add up to $shown %. They may not add up to more than 100 %.");
         }
+    }
+
+    // "100.00" for a complete recipe. Text with two decimals, so a caller compares it exactly and can show it.
+    public function totalPercentage($recipeId)
+    {
+        $total = $this->sumInHundredths(array_column($this->dao->getByRecipe($recipeId), 'percentage'));
+        return number_format($total / 100, 2, '.', '');
     }
 
     /*

@@ -281,4 +281,142 @@ use OpenApi\Attributes as OA;
         ])
     ]
 )]
+/* ---------- production runs: times as datetime-local ("2026-11-02T06:00") or "2026-11-02 06:00:00" ---------- */
+#[OA\Schema(
+    schema: 'RunParameterValueInput',
+    required: ['machine_parameter_id', 'value'],
+    properties: [
+        new OA\Property(property: 'machine_parameter_id', type: 'integer', example: 1, description: "An active parameter of the run's machine, not already recorded for the run"),
+        new OA\Property(property: 'value', type: 'number', example: 180)
+    ]
+)]
+#[OA\Schema(
+    schema: 'RunParameterValueUpdate',
+    required: ['value'],
+    properties: [new OA\Property(property: 'value', type: 'number', example: 183.5, description: 'Only the number can change, not the parameter')]
+)]
+#[OA\Schema(
+    schema: 'RunParameterValue',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 13),
+        new OA\Property(property: 'production_run_id', type: 'integer', example: 5),
+        new OA\Property(property: 'machine_parameter_id', type: 'integer', example: 1),
+        new OA\Property(property: 'value', type: 'string', example: '180.000')
+    ]
+)]
+#[OA\Schema(
+    schema: 'RunParameterValueWithName',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/RunParameterValue'),
+        new OA\Schema(properties: [
+            new OA\Property(property: 'parameter_name', type: 'string', example: 'Zone 1 temperature'),
+            new OA\Property(property: 'parameter_unit', type: 'string', nullable: true, example: '°C')
+        ])
+    ]
+)]
+#[OA\Schema(
+    schema: 'MaterialUsageInput',
+    required: ['material_id', 'quantity_kg'],
+    properties: [
+        new OA\Property(property: 'material_id', type: 'integer', example: 1, description: "A material of the run's recipe, not already used in the run"),
+        new OA\Property(property: 'quantity_kg', type: 'number', minimum: 0.001, example: 10, description: 'Taken from the stock; refused if the stock is too low')
+    ]
+)]
+#[OA\Schema(
+    schema: 'MaterialUsageUpdate',
+    required: ['quantity_kg'],
+    properties: [new OA\Property(property: 'quantity_kg', type: 'number', minimum: 0.001, example: 25, description: 'The stock moves by the difference to the saved amount')]
+)]
+#[OA\Schema(
+    schema: 'MaterialUsage',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 11),
+        new OA\Property(property: 'production_run_id', type: 'integer', example: 5),
+        new OA\Property(property: 'material_id', type: 'integer', example: 1),
+        new OA\Property(property: 'quantity_kg', type: 'string', example: '10.000')
+    ]
+)]
+#[OA\Schema(
+    schema: 'MaterialUsageWithName',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/MaterialUsage'),
+        new OA\Schema(properties: [new OA\Property(property: 'material_name', type: 'string', example: 'LDPE granulate')])
+    ]
+)]
+#[OA\Schema(
+    schema: 'ProductionRunUpdate',
+    description: 'Every field is optional: a field left out keeps its saved value, an empty optional field is cleared.',
+    properties: [
+        new OA\Property(property: 'warmup_started_at', type: 'string', nullable: true, example: '2026-11-02T05:30', description: 'Before started_at'),
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-02T06:00'),
+        new OA\Property(property: 'stable_at', type: 'string', nullable: true, example: '2026-11-02T06:45', description: 'After started_at and before ended_at'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-02T14:00', description: 'After started_at'),
+        new OA\Property(property: 'quantity_produced', type: 'number', minimum: 0, example: 870, description: "In the product's unit (kg or pcs)"),
+        new OA\Property(property: 'net_weight_per_unit_kg', type: 'number', nullable: true, example: 25),
+        new OA\Property(property: 'gross_weight_per_unit_kg', type: 'number', nullable: true, example: 25.8, description: 'Not less than the net weight'),
+        new OA\Property(property: 'scrap_kg', type: 'number', minimum: 0, example: 42, description: 'Default: 0'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Rolls of 25 kg on 0.8 kg cores.')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ProductionRunInput',
+    required: ['machine_id', 'product_id', 'recipe_id', 'user_id', 'started_at', 'ended_at', 'quantity_produced', 'material_usages'],
+    allOf: [
+        new OA\Schema(properties: [
+            new OA\Property(property: 'machine_id', type: 'integer', example: 1, description: 'An active extrusion machine'),
+            new OA\Property(property: 'product_id', type: 'integer', example: 1, description: 'An active product the machine has as output'),
+            new OA\Property(property: 'recipe_id', type: 'integer', example: 1, description: 'An active recipe linked to the product, adding up to 100 %'),
+            new OA\Property(property: 'user_id', type: 'integer', example: 2, description: 'An active user (from the login token in Milestone 4)'),
+            new OA\Property(
+                property: 'parameter_values',
+                type: 'array',
+                description: "One value for every active parameter of the machine",
+                items: new OA\Items(ref: '#/components/schemas/RunParameterValueInput')
+            ),
+            new OA\Property(
+                property: 'material_usages',
+                type: 'array',
+                description: 'At least one; only materials of the recipe',
+                items: new OA\Items(ref: '#/components/schemas/MaterialUsageInput')
+            )
+        ]),
+        new OA\Schema(ref: '#/components/schemas/ProductionRunUpdate')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ProductionRun',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 5),
+        new OA\Property(property: 'machine_id', type: 'integer', example: 1),
+        new OA\Property(property: 'product_id', type: 'integer', example: 1),
+        new OA\Property(property: 'recipe_id', type: 'integer', example: 1),
+        new OA\Property(property: 'user_id', type: 'integer', example: 2),
+        new OA\Property(property: 'warmup_started_at', type: 'string', nullable: true, example: '2026-11-02 05:30:00'),
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-02 06:00:00'),
+        new OA\Property(property: 'stable_at', type: 'string', nullable: true, example: '2026-11-02 06:45:00'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-02 14:00:00'),
+        new OA\Property(property: 'quantity_produced', type: 'string', example: '870.000'),
+        new OA\Property(property: 'net_weight_per_unit_kg', type: 'string', nullable: true, example: '25.0000'),
+        new OA\Property(property: 'gross_weight_per_unit_kg', type: 'string', nullable: true, example: '25.8000'),
+        new OA\Property(property: 'scrap_kg', type: 'string', example: '42.000'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Rolls of 25 kg on 0.8 kg cores.'),
+        new OA\Property(property: 'created_at', type: 'string', example: '2026-11-02 14:10:00'),
+        new OA\Property(property: 'updated_at', type: 'string', example: '2026-11-02 14:10:00'),
+        new OA\Property(property: 'machine_name', type: 'string', example: 'Extruder 1'),
+        new OA\Property(property: 'product_name', type: 'string', example: 'LDPE film, clear'),
+        new OA\Property(property: 'product_unit', type: 'string', enum: ['kg', 'pcs'], example: 'kg'),
+        new OA\Property(property: 'recipe_name', type: 'string', example: 'Clear film'),
+        new OA\Property(property: 'user_name', type: 'string', example: 'Demo Operator')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ProductionRunWithDetails',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/ProductionRun'),
+        new OA\Schema(properties: [
+            new OA\Property(property: 'parameter_values', type: 'array', items: new OA\Items(ref: '#/components/schemas/RunParameterValueWithName')),
+            new OA\Property(property: 'material_usages', type: 'array', items: new OA\Items(ref: '#/components/schemas/MaterialUsageWithName'))
+        ])
+    ]
+)]
 class OpenApiSpec {}
