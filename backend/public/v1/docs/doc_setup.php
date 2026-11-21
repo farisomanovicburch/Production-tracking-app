@@ -502,4 +502,36 @@ use OpenApi\Attributes as OA;
         ])
     ]
 )]
+/* ---------- maintenance records ---------- */
+#[OA\Schema(
+    schema: 'MaintenanceRecordInput',
+    required: ['machine_id', 'user_id', 'maintenance_type', 'started_at', 'ended_at', 'description'],
+    description: 'All fields are required when creating. On update every field is optional: a field left out keeps its saved value.',
+    properties: [
+        new OA\Property(property: 'machine_id', type: 'integer', example: 1, description: 'Any existing machine, also a deactivated one'),
+        new OA\Property(property: 'user_id', type: 'integer', example: 2, description: 'An active user (from the login token in Milestone 4)'),
+        new OA\Property(property: 'maintenance_type', type: 'string', enum: ['preventive', 'corrective'], example: 'preventive'),
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-04T07:00'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-04T09:30', description: 'After started_at'),
+        new OA\Property(property: 'description', type: 'string', example: 'Gearbox oil change', description: 'The work that was done, up to 1000 characters'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'Spare part: 2 kW heater band.')
+    ]
+)]
+#[OA\Schema(
+    schema: 'MaintenanceRecord',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 3),
+        new OA\Property(property: 'machine_id', type: 'integer', example: 1),
+        new OA\Property(property: 'user_id', type: 'integer', example: 2),
+        new OA\Property(property: 'maintenance_type', type: 'string', enum: ['preventive', 'corrective'], example: 'preventive'),
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-04 07:00:00'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-04 09:30:00'),
+        new OA\Property(property: 'description', type: 'string', example: 'Gearbox oil change'),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: null),
+        new OA\Property(property: 'created_at', type: 'string', example: '2026-11-04 09:40:00'),
+        new OA\Property(property: 'updated_at', type: 'string', example: '2026-11-04 09:40:00'),
+        new OA\Property(property: 'machine_name', type: 'string', example: 'Extruder 1'),
+        new OA\Property(property: 'user_name', type: 'string', example: 'Demo Operator')
+    ]
+)]
 class OpenApiSpec {}

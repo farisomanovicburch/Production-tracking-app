@@ -25,6 +25,7 @@ require_once __DIR__ . '/rest/services/RunParameterValueService.php';
 require_once __DIR__ . '/rest/services/MaterialUsageService.php';
 require_once __DIR__ . '/rest/services/ConversionRunService.php';
 require_once __DIR__ . '/rest/services/ConversionRunParameterValueService.php';
+require_once __DIR__ . '/rest/services/MaintenanceRecordService.php';
 
 // Each service is created once, on first use; a route gets it with Flight::userService() instead of `new`.
 Flight::register('userService', 'UserService');
@@ -41,6 +42,7 @@ Flight::register('runParameterValueService', 'RunParameterValueService');
 Flight::register('materialUsageService', 'MaterialUsageService');
 Flight::register('conversionRunService', 'ConversionRunService');
 Flight::register('conversionRunParameterValueService', 'ConversionRunParameterValueService');
+Flight::register('maintenanceRecordService', 'MaintenanceRecordService');
 
 /*
  * The one place that turns an exception into an answer, so no route needs a try/catch.
@@ -96,5 +98,6 @@ require_once __DIR__ . '/rest/routes/RunParameterValueRoutes.php';
 require_once __DIR__ . '/rest/routes/MaterialUsageRoutes.php';
 require_once __DIR__ . '/rest/routes/ConversionRunRoutes.php';
 require_once __DIR__ . '/rest/routes/ConversionRunParameterValueRoutes.php';
+require_once __DIR__ . '/rest/routes/MaintenanceRecordRoutes.php';
 
 Flight::start();
