@@ -51,6 +51,24 @@ class MachineParameterService extends BaseService
         return parent::update($this->prepare($parameter), $id);
     }
 
+    /*
+     * A new run or conversion must record every parameter the machine still uses; deactivated ones are not asked
+     * for. Lives here because both run services need it and the parameters are this service's entity.
+     */
+    public function assertValuesForEveryActiveParameter($machineId, $values)
+    {
+        $sentParameterIds = array_map('intval', array_column($values, 'machine_parameter_id'));
+        $missing = [];
+        foreach ($this->dao->getActiveByMachine($machineId) as $parameter) {
+            if (!in_array((int) $parameter['id'], $sentParameterIds, true)) {
+                $missing[] = $parameter['name'];
+            }
+        }
+        if ($missing !== []) {
+            throw new ValidationException('Missing values for these parameters: ' . implode(', ', $missing) . '.');
+        }
+    }
+
     protected function validate($parameter, $id = null)
     {
         Validator::required($parameter, ['name']);

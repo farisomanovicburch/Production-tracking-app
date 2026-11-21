@@ -74,11 +74,6 @@ class MaterialService extends BaseService
         $this->dao->changeStock($id, number_format((float) $quantityKg, 3, '.', ''));
     }
 
-    public static function grams($kg)
-    {
-        return (int) round((float) $kg * 1000);
-    }
-
     protected function validate($material, $id = null)
     {
         Validator::required($material, ['name']);

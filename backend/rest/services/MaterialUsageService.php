@@ -84,7 +84,7 @@ class MaterialUsageService extends BaseService
         $this->validate($usage, $id);
 
         return $this->dao->transaction(function () use ($usage, $id, $existing) {
-            $differenceGrams = MaterialService::grams($usage['quantity_kg']) - MaterialService::grams($existing['quantity_kg']);
+            $differenceGrams = self::grams($usage['quantity_kg']) - self::grams($existing['quantity_kg']);
             if ($differenceGrams > 0) {
                 $this->materialService->takeStock($existing['material_id'], $differenceGrams / 1000);
             } elseif ($differenceGrams < 0) {

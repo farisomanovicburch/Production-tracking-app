@@ -98,6 +98,42 @@ abstract class ApiTestCase extends TestCase
         ], $overrides);
     }
 
+    // Everything a conversion needs, under a code of its own: a bag machine with one parameter that takes a film
+    // (input) and makes a bag (output), and a user.
+    protected function createConversionSetup(string $code): array
+    {
+        $machineId = $this->request('POST', '/backend/machines', ['name' => "Route bag machine $code", 'code' => "RB-$code", 'machine_type' => 'conversion'])['body']['id'];
+        $parameterId = $this->request('POST', "/backend/machines/$machineId/parameters", ['name' => 'Route weld time', 'unit' => 's'])['body']['id'];
+        $inputProductId = $this->request('POST', '/backend/products', ['code' => "RI-$code", 'name' => "Route film $code"])['body']['id'];
+        $outputProductId = $this->request('POST', '/backend/products', ['code' => "RO-$code", 'name' => "Route bag $code", 'unit' => 'pcs'])['body']['id'];
+        $this->request('POST', "/backend/machines/$machineId/products", ['product_id' => $inputProductId, 'role' => 'input']);
+        $this->request('POST', "/backend/machines/$machineId/products", ['product_id' => $outputProductId, 'role' => 'output']);
+        $userId = $this->request('POST', '/backend/users', [
+            'full_name' => "Route operator $code", 'email' => strtolower("route.conversion.$code@example.com"), 'password' => 'secret123',
+        ])['body']['id'];
+
+        return [
+            'machine_id' => $machineId, 'parameter_id' => $parameterId, 'input_product_id' => $inputProductId,
+            'output_product_id' => $outputProductId, 'user_id' => $userId,
+        ];
+    }
+
+    protected function conversionBody(array $setup, array $overrides = []): array
+    {
+        return array_merge([
+            'machine_id' => $setup['machine_id'],
+            'user_id' => $setup['user_id'],
+            'input_product_id' => $setup['input_product_id'],
+            'output_product_id' => $setup['output_product_id'],
+            'started_at' => '2026-11-03T07:00',
+            'ended_at' => '2026-11-03T13:00',
+            'input_kg' => 528,
+            'output_kg' => 500,
+            'bag_count' => 4200,
+            'parameter_values' => [['machine_parameter_id' => $setup['parameter_id'], 'value' => 0.6]],
+        ], $overrides);
+    }
+
     // A second server with different settings, e.g. a database that does not exist. Settings come from
     // environment variables because Config reads those before its defaults.
     protected static function startServer(array $environment = []): string

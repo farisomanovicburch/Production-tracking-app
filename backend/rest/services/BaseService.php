@@ -83,6 +83,23 @@ class BaseService
     {
     }
 
+    // Kilograms as whole grams: 0.1 + 0.2 is not exactly 0.3 in floating point, but 100 + 200 is exactly 300.
+    // Every DECIMAL(…,3) kg column has gram precision, so nothing is lost.
+    public static function grams($kg)
+    {
+        return (int) round((float) $kg * 1000);
+    }
+
+    // JSON could send anything under a key like parameter_values; only a list of objects can be looped over safely.
+    protected function listOfObjects($entity, $field)
+    {
+        $list = $entity[$field] ?? [];
+        if (!is_array($list) || !array_is_list($list) || count(array_filter($list, 'is_array')) !== count($list)) {
+            throw new ValidationException("Field '$field' must be a list of objects.");
+        }
+        return $list;
+    }
+
     // A user cannot see the space in " EX-01", but the database would store it and compare with it: spaces around
     // a name or code are typing noise.
     protected function trimStrings($entity, $fields)

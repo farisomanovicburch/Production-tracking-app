@@ -2,6 +2,7 @@
 require_once __DIR__ . '/BaseService.php';
 require_once __DIR__ . '/RecipeItemService.php';
 require_once __DIR__ . '/MaterialService.php';
+require_once __DIR__ . '/MachineParameterService.php';
 require_once __DIR__ . '/RunParameterValueService.php';
 require_once __DIR__ . '/MaterialUsageService.php';
 require_once __DIR__ . '/../dao/ProductionRunDao.php';
@@ -11,7 +12,6 @@ require_once __DIR__ . '/../dao/RecipeDao.php';
 require_once __DIR__ . '/../dao/UserDao.php';
 require_once __DIR__ . '/../dao/MachineProductDao.php';
 require_once __DIR__ . '/../dao/RecipeProductDao.php';
-require_once __DIR__ . '/../dao/MachineParameterDao.php';
 require_once __DIR__ . '/../dao/MaterialDao.php';
 require_once __DIR__ . '/../dao/RunParameterValueDao.php';
 require_once __DIR__ . '/../dao/MaterialUsageDao.php';
@@ -42,7 +42,7 @@ class ProductionRunService extends BaseService
     private $userDao;
     private $machineProductDao;
     private $recipeProductDao;
-    private $machineParameterDao;
+    private $machineParameterService;
     private $materialDao;
     private $runParameterValueDao;
     private $materialUsageDao;
@@ -62,7 +62,7 @@ class ProductionRunService extends BaseService
         $this->userDao = new UserDao();
         $this->machineProductDao = new MachineProductDao();
         $this->recipeProductDao = new RecipeProductDao();
-        $this->machineParameterDao = new MachineParameterDao();
+        $this->machineParameterService = new MachineParameterService();
         $this->materialDao = new MaterialDao();
         $this->runParameterValueDao = new RunParameterValueDao();
         $this->materialUsageDao = new MaterialUsageDao();
@@ -234,30 +234,10 @@ class ProductionRunService extends BaseService
         }
     }
 
-    // JSON could send anything under these keys; only a list of objects can be looped over safely.
-    private function listOfObjects($run, $field)
-    {
-        $list = $run[$field] ?? [];
-        if (!is_array($list) || !array_is_list($list) || count(array_filter($list, 'is_array')) !== count($list)) {
-            throw new ValidationException("Field '$field' must be a list of objects.");
-        }
-        return $list;
-    }
-
     // Rules only a NEW run has. Everything a single value or usage must obey is checked by its own service.
     private function validateNewRunChildren($run, $parameterValues, $materialUsages)
     {
-        // Every parameter the machine still uses must have a reading. Deactivated ones are not asked for.
-        $sentParameterIds = array_map('intval', array_column($parameterValues, 'machine_parameter_id'));
-        $missing = [];
-        foreach ($this->machineParameterDao->getActiveByMachine($run['machine_id']) as $parameter) {
-            if (!in_array((int) $parameter['id'], $sentParameterIds, true)) {
-                $missing[] = $parameter['name'];
-            }
-        }
-        if ($missing !== []) {
-            throw new ValidationException('Missing values for these parameters: ' . implode(', ', $missing) . '.');
-        }
+        $this->machineParameterService->assertValuesForEveryActiveParameter($run['machine_id'], $parameterValues);
 
         // Without usages the stock would silently stay where it was, as if the run had used nothing.
         if ($materialUsages === []) {

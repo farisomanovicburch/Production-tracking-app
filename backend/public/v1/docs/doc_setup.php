@@ -419,4 +419,87 @@ use OpenApi\Attributes as OA;
         ])
     ]
 )]
+/* ---------- conversion runs (bag making); a parameter value has the same input as a run's ---------- */
+#[OA\Schema(
+    schema: 'ConversionRunParameterValue',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 7),
+        new OA\Property(property: 'conversion_run_id', type: 'integer', example: 3),
+        new OA\Property(property: 'machine_parameter_id', type: 'integer', example: 7),
+        new OA\Property(property: 'value', type: 'string', example: '0.600')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ConversionRunParameterValueWithName',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/ConversionRunParameterValue'),
+        new OA\Schema(properties: [
+            new OA\Property(property: 'parameter_name', type: 'string', example: 'Weld time'),
+            new OA\Property(property: 'parameter_unit', type: 'string', nullable: true, example: 's')
+        ])
+    ]
+)]
+#[OA\Schema(
+    schema: 'ConversionRunUpdate',
+    description: 'Every field is optional: a field left out keeps its saved value.',
+    properties: [
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-03T07:00'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-03T13:00', description: 'After started_at'),
+        new OA\Property(property: 'input_kg', type: 'number', minimum: 0.001, example: 528, description: 'Film that went in'),
+        new OA\Property(property: 'output_kg', type: 'number', minimum: 0, example: 500, description: 'Bags that came out; not more than input_kg'),
+        new OA\Property(property: 'bag_count', type: 'integer', minimum: 0, example: 4200),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: 'New knife fitted before the job.')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ConversionRunInput',
+    required: ['machine_id', 'user_id', 'input_product_id', 'output_product_id', 'started_at', 'ended_at', 'input_kg', 'output_kg', 'bag_count'],
+    allOf: [
+        new OA\Schema(properties: [
+            new OA\Property(property: 'machine_id', type: 'integer', example: 3, description: 'An active conversion machine'),
+            new OA\Property(property: 'user_id', type: 'integer', example: 2, description: 'An active user (from the login token in Milestone 4)'),
+            new OA\Property(property: 'input_product_id', type: 'integer', example: 1, description: 'An active product the machine has as input'),
+            new OA\Property(property: 'output_product_id', type: 'integer', example: 3, description: 'An active product the machine has as output'),
+            new OA\Property(
+                property: 'parameter_values',
+                type: 'array',
+                description: 'One value for every active parameter of the machine',
+                items: new OA\Items(ref: '#/components/schemas/RunParameterValueInput')
+            )
+        ]),
+        new OA\Schema(ref: '#/components/schemas/ConversionRunUpdate')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ConversionRun',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 3),
+        new OA\Property(property: 'machine_id', type: 'integer', example: 3),
+        new OA\Property(property: 'user_id', type: 'integer', example: 2),
+        new OA\Property(property: 'input_product_id', type: 'integer', example: 1),
+        new OA\Property(property: 'output_product_id', type: 'integer', example: 3),
+        new OA\Property(property: 'started_at', type: 'string', example: '2026-11-03 07:00:00'),
+        new OA\Property(property: 'ended_at', type: 'string', example: '2026-11-03 13:00:00'),
+        new OA\Property(property: 'input_kg', type: 'string', example: '528.000'),
+        new OA\Property(property: 'output_kg', type: 'string', example: '500.000'),
+        new OA\Property(property: 'bag_count', type: 'integer', example: 4200),
+        new OA\Property(property: 'notes', type: 'string', nullable: true, example: null),
+        new OA\Property(property: 'created_at', type: 'string', example: '2026-11-03 13:10:00'),
+        new OA\Property(property: 'updated_at', type: 'string', example: '2026-11-03 13:10:00'),
+        new OA\Property(property: 'scrap_kg', type: 'string', example: '28.000', description: 'input_kg - output_kg, calculated, never stored'),
+        new OA\Property(property: 'machine_name', type: 'string', example: 'Bag machine 1'),
+        new OA\Property(property: 'user_name', type: 'string', example: 'Demo Operator'),
+        new OA\Property(property: 'input_product_name', type: 'string', example: 'LDPE film, clear'),
+        new OA\Property(property: 'output_product_name', type: 'string', example: 'Carrier bag, white')
+    ]
+)]
+#[OA\Schema(
+    schema: 'ConversionRunWithDetails',
+    allOf: [
+        new OA\Schema(ref: '#/components/schemas/ConversionRun'),
+        new OA\Schema(properties: [
+            new OA\Property(property: 'parameter_values', type: 'array', items: new OA\Items(ref: '#/components/schemas/ConversionRunParameterValueWithName'))
+        ])
+    ]
+)]
 class OpenApiSpec {}
