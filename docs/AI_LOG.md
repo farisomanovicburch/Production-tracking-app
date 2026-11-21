@@ -408,3 +408,122 @@
 - **How I noticed:** VS Code showed "Unclosed '['" in that test file.
 - **How I fixed it:** the AI rewrote both files with its file tool and checked every test file
   with `php -l`. Lesson: after generated code is written, check that the files are complete.
+
+## Milestone 3
+
+### Tools and tasks
+
+**1. Getting ready for Milestone 3**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** understand the Milestone 2 code before building on it, compare the ERD with the
+  real SQL, and add what the services would need from the database.
+- **Main prompt:** This is the last respons on my milestone 2. Before I start working on mileston 3 generate these steps for me so we can do them one by one and then move on to milestone 3.
+- **What was generated:** lessons with check questions on the SQL file, PDO and SQL
+  injection, BaseDao, the child DAOs and PHPUnit; `is_active` on machine parameters and
+  strict maintenance durations; a fix for empty inserts and real prepared statements; DAO
+  queries for the cross-table rules (machine-product links, recipe-product links, the
+  default recipe, active parameters, stock changed in one statement).
+- **What I kept, changed or rejected:** Kept everything 
+
+**2. Planning Milestone 3**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** turn the four Milestone 3 requirements (services, routes, OpenAPI, external API)
+  into commits, following the course repository's week-04 to week-06 code.
+- **Main prompt:** "let's move to M3".
+- **What was generated:** a plan with eleven commits and four decisions for me: the external
+  API, how to test the routes, 400 or 409 for broken rules, and whether a production run is
+  created with one request or several.
+- **What I kept, changed or rejected:** kept everything
+
+**3. API foundation and the users API**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** FlightPHP front controller, Swagger UI, the service layer foundation, and the
+  first full resource.
+- **Main prompt:** Start working on planned commits
+- **What was generated:** `index.php` with one error handler that turns every exception into
+  `{"status", "error"}`, `server.php`, the Swagger setup, the exceptions that carry their HTTP
+  status, `Validator`, `BaseService`, savepoint transactions in `BaseDao`, the users API with
+  hashed passwords, and route tests that start a real PHP server and check that every status
+  is documented.
+- **What I kept, changed or rejected:** Everything was kept
+
+**4. Master data APIs: machines, products, materials, recipes**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** services, routes and documentation for the master data and its links.
+- **Main prompt:** Move on to the following commit
+- **What was generated:** services with duplicate-name checks, machine type locked after
+  creation, stock changed only through deliveries, recipe percentages added up in whole
+  hundredths so a correct recipe is not refused by a floating-point error, and one default
+  recipe per product swapped in one transaction.
+- **What I kept, changed or rejected:** Kept everything
+
+**5. Production runs, conversions and maintenance**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** the core records of the app, with the rules the database cannot check and the
+  stock movements.
+- **Main prompts:** "Lets work on the next commit shall we", then "continue and finish the
+  whole commit in one go dont split it into 6 parts", and the same for conversions and
+  maintenance.
+- **What was generated:** four questions about the rules, which I answered: every active
+  parameter needs a value, usages only for recipe materials, deactivated master data refused
+  for new runs, and a run returned with its values and usages. Then: one request that saves a
+  run, its values, its usages and the stock decrease in one transaction; usages that move the
+  stock by the difference when edited; conversions with the same rules and no stock;
+  maintenance where every field stays editable and a deactivated machine is allowed.
+  Every new test was seen failing first, or proven with a sabotage.
+- **What I kept, changed or rejected:** Kept everything
+
+**6. External API: Open-Meteo**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** replace the planned OpenWeather, which needs an account, and build the weather
+  endpoint.
+- **Main prompt:** "https://open-meteo.com/ Before we continue can you check would this work.
+  OpenWeather asks to log in i dont want to do that".
+- **What was generated:** a check of the course requirement (no key needed), a real test
+  call, the terms of use, and later `GET /weather` with timeouts, a 503 and a log entry for
+  every failure, the weather codes turned into text, a thunderstorm warning, a fake
+  Open-Meteo for tests without internet, and the CC BY 4.0 credit on the dashboard card.
+- **What I kept, changed or rejected:** Kept everything
+
+**7. Documentation**
+- **Tool:** Claude Code (VS Code extension), model Claude Opus 5.5.
+- **Task:** bring the README, the ERD notes and CLAUDE.md in line with the finished API.
+- **Main prompt:** "continue with commit 11 in one go".
+- **What was generated:** README sections on the REST API, Swagger, Open-Meteo and running
+  the project with one PHP server; the ERD's rules with the service that enforces each one;
+  CLAUDE.md rules for services, routes and route tests.
+- **What I kept, changed or rejected:** Kept everything
+
+### Where the AI was wrong
+
+**1. A test that expected the wrong numbers**
+- **What was wrong:** the weather test for the next hours expected temperatures read from
+  the wrong positions in the fake forecast (12.0 °C at 18:00 where the fixture had 13.9).
+- **How I noticed:** the first run after the code was written failed that test, and the
+  difference showed that the code picked the right hours and the test did not.
+- **How I fixed it:** the AI corrected the expected values. Because the test was now written
+  after seeing the code's output, it no longer proved anything on its own, so the AI broke
+  the code twice on purpose (forecasts two hours apart, the current hour counted as a
+  forecast) and both times the test failed. Lesson: a test corrected after the code needs
+  a new sabotage.
+
+**2. A broken PHPUnit configuration**
+- **What was wrong:** the AI wrote a comment in `phpunit.xml` that contained the command
+  option with two hyphens. XML does not allow two hyphens in a row inside a comment, so
+  PHPUnit refused the whole file and no test ran.
+- **How I noticed:** the test run printed "Double hyphen within comment" and nothing else.
+- **How I fixed it:** the comment was reworded. Lesson: an empty test run is a failure too,
+  not a pass.
+
+**3. HTTPS that did not work on my computer**
+- **What was wrong:** the plan assumed PHP could call an HTTPS address. My PHP 8.4 had no list
+  of trusted certificate authorities, so every call to Open-Meteo failed with "unable to get
+  local issuer certificate". All offline tests had passed, because the fake Open-Meteo uses
+  plain HTTP.
+- **How I noticed:** the one test against the real Open-Meteo failed. The weather endpoint
+  handled it as designed: it logged the reason and answered 503.
+- **How I fixed it:** I chose the fix: Mozilla's certificate list, checked against its
+  published checksum, saved in `C:\php\8.4\extras\ssl\` and set in `php.ini`. The README now
+  has this step. Turning certificate checks off was rejected, because then anyone between the
+  server and Open-Meteo could fake its answers. Lesson: tests against a fake prove the logic,
+  not the connection, so one live test is worth keeping.

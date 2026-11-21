@@ -229,15 +229,18 @@ for the bags that came out.
 ## Rules the database cannot check
 
 Foreign keys and checks protect one table at a time. These rules span several tables, so
-the backend services enforce them (Milestone 3):
+the backend services in `backend/rest/services/` enforce them (Milestone 3):
 
-- A production run's machine is an extrusion machine; a conversion's machine is a
-  conversion machine.
-- A run's product is linked to its machine as an output; a conversion's input and output
-  products are linked to its machine as input and output.
-- A run's recipe is linked to the run's product through `recipe_products`.
-- Parameter values belong to parameters of the run's own machine.
-- A recipe's percentages add up to 100.
-- A product has at most one default recipe.
-- Material stock goes down by a run's usages, changes by the difference when a usage is
-  edited, and comes back when a run is deleted.
+| Rule | Enforced in |
+|---|---|
+| A production run's machine is an extrusion machine; a conversion's machine is a conversion machine. | `ProductionRunService`, `ConversionRunService` |
+| A run's product is linked to its machine as an output; a conversion's input and output products are linked to its machine as input and output. | `ProductionRunService`, `ConversionRunService` |
+| A run's recipe is linked to the run's product through `recipe_products`. | `ProductionRunService` |
+| Parameter values belong to parameters of the run's own machine; new values only for active parameters. | `RunParameterValueService`, `ConversionRunParameterValueService` |
+| A new run or conversion has a value for every active parameter of its machine. | `MachineParameterService` (used by both run services) |
+| A recipe's percentages never add up to more than 100; a run can only use a recipe that adds up to exactly 100. | `RecipeItemService`, `ProductionRunService` |
+| A run's material usages are materials of its recipe, and a new run uses at least one. | `MaterialUsageService`, `ProductionRunService` |
+| A product has at most one default recipe. | `RecipeProductService` |
+| Material stock goes down by a run's usages, changes by the difference when a usage is edited, and comes back when a run or usage is deleted; a run that would take more than the stock is refused. | `MaterialService`, `MaterialUsageService`, `ProductionRunService` |
+| Deactivated machines, products, recipes, materials and users cannot be used for new runs and conversions; old records that use them stay editable. A deactivated machine can still get maintenance records. | the run, conversion and maintenance services |
+| A run's machine, product, recipe and user, and a conversion's machine, products and user, cannot change after it is saved. | `ProductionRunService`, `ConversionRunService` |

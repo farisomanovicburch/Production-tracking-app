@@ -8,13 +8,18 @@
 
 ## Technology stack
 - Frontend: HTML, CSS, JavaScript, jQuery, Bootstrap 5, single-page application (SPA)
-- Backend: PHP 8.4 with FlightPHP (REST API), PDO, MySQL 8; Composer for dependencies, PHPUnit 13 for tests
-- Local setup: PHP 8.4 in C:\php\8.4 (on PATH), MySQL Server 8.0 as the Windows service MySQL80, both listening on 127.0.0.1 only. XAMPP's PHP 8.2 and MariaDB are NOT used (XAMPP's Apache only serves phpMyAdmin).
+- Backend: PHP 8.4 with FlightPHP (REST API), swagger-php (OpenAPI docs), PDO, MySQL 8; Composer for dependencies, PHPUnit 13 for tests
+- External API: Open-Meteo (weather, no key). Never OpenWeather or any API that needs an account.
+- Local setup: PHP 8.4 in C:\php\8.4 (on PATH), MySQL Server 8.0 as the Windows service MySQL80, both listening on 127.0.0.1 only. XAMPP's PHP 8.2 and MariaDB are NOT used (XAMPP's Apache only serves phpMyAdmin). PHP's HTTPS certificate list is C:\php\8.4\extras\ssl\cacert.pem (curl.cainfo and openssl.cafile in php.ini).
+- Run the app from the project root: `php -S localhost:8000 server.php` (frontend /frontend/, API /backend/, Swagger /backend/public/v1/docs/).
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/
   - js/services/: the only frontend code that calls the backend (M5 frontend MVC rule)
-- backend/: rest/ (routes/, services/, dao/), middleware/, config/, logs/ — the course repo's layout
-  - tests/: PHPUnit tests (schema/ for database rules and sample data, dao/ for the DAOs)
+- server.php (project root): router for `php -S`; backend/.htaccess does the same job under Apache.
+- backend/: index.php (front controller), rest/ (routes/, services/, dao/), utils/, public/v1/docs/, middleware/, config/, logs/ — the course repo's layout
+  - utils/: exceptions.php (HttpException and its subclasses, each carrying its HTTP status), Validator.php, Roles.php
+  - public/v1/docs/: Swagger UI (index.html), swagger.php (generates the OpenAPI JSON), doc_setup.php (API info + shared schemas), paths/ (one *Paths class per routes file)
+  - tests/: PHPUnit tests: schema/ (database rules, sample data), dao/, services/, api/ (HTTP route tests), utils/, fixtures/ (fake external APIs)
 - database/production_tracker.sql: the whole database (schema + sample data). It DROPS and recreates production_tracker, and the test bootstrap runs it before every test run.
 - docs/: AI_LOG.md and other documentation
 ## Frontend rules
@@ -25,11 +30,17 @@
 - Requests go: route -> service -> DAO -> database.
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL uses PDO prepared statements.
-- Routes return JSON with correct HTTP status codes.
+- Routes return JSON with correct HTTP status codes. Routes have no try/catch: a service throws an HttpException subclass (ValidationException 400, NotFoundException 404, ExternalServiceException 503) and the error handler in index.php answers `{"status": ..., "error": "..."}`. Anything else becomes a 500 whose details go only to the log. A broken business rule is a 400 (course rule), not a 409.
+- One service per entity, extending BaseService; register it in index.php (`Flight::register`) and get it in routes with `Flight::xService()`. Rules go in `validate($entity, $id)`; override a CRUD method only when that operation has extra rules.
+- Child resources are listed and added through the parent's URL (`POST /recipes/{id}/items`) and changed or deleted through their own id (`PUT /recipe-items/{id}`). The parent id comes from the URL, never from the body (allow-list the accepted fields), and the inherited add() throws LogicException so it cannot bypass that.
+- Writes that belong together (a run, its usages and the stock change) go in `$this->dao->transaction(fn)`; BaseDao uses SAVEPOINTs when a transaction is already open, so services can nest.
+- Every route is documented in public/v1/docs/paths/ in the same commit, with every status it can answer; route tests call assertDocumented() for each status they receive.
 - One DAO per table, extending BaseDao. A DAO names its table and its writable columns (the whitelist); every column except id, created_at and updated_at must be in it (DaoWhitelistTest enforces this).
 - A DAO never returns users.password_hash, except UserDao::getByEmail() for the login check.
 - BaseDao::update() returns the number of CHANGED rows, so 0 does not mean "not found": check existence with getById() before answering 404.
-- Run the tests from backend/: `php vendor/bin/phpunit`. Each test runs in a transaction that is rolled back; fixtures come from DatabaseTestCase's create*() helpers, never from the sample data.
+- Run the tests from backend/: `php vendor/bin/phpunit`. Each DAO and service test runs in a transaction that is rolled back; fixtures come from DatabaseTestCase's create*() helpers, never from the sample data.
+- Route tests (tests/api/) send real HTTP requests to a `php -S` server the tests start. Its writes are NOT rolled back, so a route test creates its own data under a unique code (e.g. ApiTestCase::createRunSetup('PR-ADD')) and never changes sample rows another test reads. That is also why phpunit.xml runs the sample-data suite (tests/schema) first.
+- Tests never need the internet: external APIs are replaced by a fake server in tests/fixtures/. A test against the real API goes in `#[Group('internet')]`, which phpunit.xml excludes; run it with `php vendor/bin/phpunit --group internet`.
 ## Conventions
 - PHP classes: PascalCase (UserService, UserDao). Files are named after the class.
 - JavaScript and PHP variables: camelCase. Database tables and columns: snake_case.
