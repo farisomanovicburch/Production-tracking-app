@@ -4,7 +4,7 @@
  * purpose, run with php -S by ErrorLogTest and RequestLogTest. The real app has no route that answers 401 or 403
  * yet, and none that has a logged-in user, so this is the only way to see the middleware handle them.
  *
- *   /unauthorized  /forbidden  /forbidden-as-operator  /invalid  /missing  /crash
+ *   /unauthorized  /forbidden  /forbidden-as-operator  /invalid  /missing  /unavailable  /crash
  */
 require __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../middleware/ErrorMiddleware.php';
@@ -37,6 +37,9 @@ Flight::route('GET /invalid', function () {
 });
 Flight::route('GET /missing', function () {
     throw new NotFoundException('Run not found.');
+});
+Flight::route('GET /unavailable', function () {
+    throw new ExternalServiceException('The weather service is not available right now.');
 });
 Flight::route('GET /crash', function () {
     throw new RuntimeException('boom');

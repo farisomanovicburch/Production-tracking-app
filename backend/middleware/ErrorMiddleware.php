@@ -6,13 +6,14 @@ require_once __DIR__ . '/../utils/Logger.php';
  * The one place that turns an exception into an answer, so no route needs a try/catch. Registered in index.php with
  * Flight::map('error', ...) and Flight::map('notFound', ...).
  *
- * What goes to error.log: every 401, every 403, every 500 and every URL that matches no route. A 400 or a 404 for
+ * What goes to error.log: every 401, 403, 500 and 503, and every URL that matches no route. A 400 or a 404 for
  * a missing record is the user's mistake, not the server's problem, so it would only bury the lines that matter.
  */
 class ErrorMiddleware
 {
-    // The statuses worth a line in error.log: someone who is not logged in or not allowed, and the server's own faults.
-    private const LOGGED_STATUSES = [401, 403, 500];
+    // The statuses worth a line in error.log: someone who is not logged in or not allowed, and the server's own
+    // faults, including an external API that is down (503), where the line names the request it spoiled.
+    private const LOGGED_STATUSES = [401, 403, 500, 503];
 
     /*
      *  - HttpException (thrown by a service or a middleware): its own status and message, written for the user.

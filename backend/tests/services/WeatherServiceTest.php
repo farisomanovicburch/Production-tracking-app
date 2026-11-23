@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/ApiTestCase.php';
 require_once __DIR__ . '/../../rest/services/WeatherService.php';
+require_once __DIR__ . '/../../utils/Logger.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -14,20 +15,31 @@ final class WeatherServiceTest extends ApiTestCase
 {
     private const UNAVAILABLE = 'The weather service is not available right now. Please try again later.';
 
-    private string $logFile;
-    private string|false $previousLog;
+    private string $logFolder;
 
-    // error_log() goes to a file of this test's own, so the test can read what the service logged.
+    // The Logger writes into a folder of this test's own, so the test can read what the service logged.
     protected function setUp(): void
     {
-        $this->logFile = tempnam(sys_get_temp_dir(), 'weather-log-');
-        $this->previousLog = ini_set('error_log', $this->logFile);
+        $this->logFolder = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'weather-log-' . bin2hex(random_bytes(6));
+        Logger::setDirectory($this->logFolder);
     }
 
     protected function tearDown(): void
     {
-        ini_set('error_log', (string) $this->previousLog);
-        @unlink($this->logFile);
+        Logger::setDirectory(null);
+        foreach (glob($this->logFolder . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+            unlink($file);
+        }
+        if (is_dir($this->logFolder)) {
+            rmdir($this->logFolder);
+        }
+    }
+
+    // '' when nothing was logged to that file.
+    private function logged(string $file): string
+    {
+        $path = $this->logFolder . DIRECTORY_SEPARATOR . $file;
+        return file_exists($path) ? (string) file_get_contents($path) : '';
     }
 
     private function service(string $scenario, array $overrides = []): WeatherService
@@ -50,7 +62,7 @@ final class WeatherServiceTest extends ApiTestCase
         } catch (ExternalServiceException $exception) {
             $this->assertSame([503, self::UNAVAILABLE], [$exception->getStatus(), $exception->getMessage()]);
         }
-        $this->assertStringContainsString($loggedReason, (string) file_get_contents($this->logFile));
+        $this->assertStringContainsString($loggedReason, $this->logged('error.log'));
     }
 
     /* ---------- a normal answer, reduced to what the dashboard card shows ---------- */
@@ -156,6 +168,45 @@ final class WeatherServiceTest extends ApiTestCase
     public function testAnAnswerWithoutTheForecastBecomesA503(): void
     {
         $this->assertUnavailable($this->service('incomplete'), 'the answer is missing');
+    }
+
+    /* ---------- every call to the external API is written down ---------- */
+
+    public function testACallThatGetsAnAnswerIsLoggedWithItsStatusAndDuration(): void
+    {
+        $this->service('ok')->getForecast();
+
+        $this->assertMatchesRegularExpression(
+            '/\] INFO EXTERNAL Open-Meteo GET http:\/\/127\.0\.0\.1:\d+\/ok\/v1\/forecast 200 \d+ms\R$/',
+            $this->logged('info.log')
+        );
+        $this->assertSame('', $this->logged('error.log'));
+    }
+
+    // The call itself worked (Open-Meteo answered), so it is in info.log; that it refused is an error.
+    public function testAnErrorAnswerIsLoggedWithItsStatusAndItsReason(): void
+    {
+        $this->assertUnavailable($this->service('ok', ['latitude' => 91]), 'HTTP 400: Latitude must be in range of -90 to 90');
+
+        $this->assertMatchesRegularExpression('/\] INFO EXTERNAL Open-Meteo GET \S+ 400 \d+ms\R$/', $this->logged('info.log'));
+        $this->assertMatchesRegularExpression('/\] ERROR Weather API \(Open-Meteo\) unavailable: HTTP 400: /', $this->logged('error.log'));
+    }
+
+    // No answer, no status to write down: only the error, with how long the call took before it gave up.
+    public function testACallThatGetsNoAnswerIsLoggedAsAnErrorOnly(): void
+    {
+        $this->assertUnavailable($this->service('ok', ['url' => 'http://127.0.0.1:1/v1/forecast']), 'request failed');
+
+        $this->assertMatchesRegularExpression('/\] ERROR Weather API \(Open-Meteo\) unavailable: request failed after \d+ms: /', $this->logged('error.log'));
+        $this->assertSame('', $this->logged('info.log'));
+    }
+
+    public function testTheLocationOfTheFactoryIsNotLogged(): void
+    {
+        $this->service('ok')->getForecast();
+
+        $this->assertStringNotContainsString('43.8563', $this->logged('info.log'));
+        $this->assertStringNotContainsString('latitude', $this->logged('info.log'));
     }
 
     /* ---------- the real API, only with --group internet ---------- */

@@ -34,11 +34,7 @@ Every entry points at the place in the code, README or Swagger that shows the pr
    - backend/public/v1/docs/doc_setup.php:44 (Swagger already promises it: "A deactivated user cannot log in.")
    - README.md:128 (`former@example.com`: "logging in is refused")
 3. Errors go to PHP's `error_log()`, not to `backend/logs/error.log`.
-   - backend/rest/services/WeatherService.php:192 (`error_log("Weather API (Open-Meteo) unavailable: ...")`)
-   - backend/tests/services/WeatherServiceTest.php:20-29 (the test redirects `ini_set('error_log', ...)`, so it must change with the logger)
    - README.md:164-165 ("the details go only to the server log")
-4. Nothing writes `backend/logs/info.log`, including the required external-API-call lines.
-   - backend/rest/services/WeatherService.php:131 (`curl_init`), :140 (`curl_exec`), :145 (`curl_getinfo` status): status and duration of the Open-Meteo call belong here
 6. `.htaccess` must pass the `Authorization` header to PHP, or Apache drops the token.
    - backend/.htaccess:3-6
 7. The JWT secret and expiry have no config yet.
@@ -118,7 +114,7 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 | 1 | feat: add the Logger (info/error, creates backend/logs/, never logs passwords) | done |
 | 2 | feat: add the error middleware (items 3, 5) | done |
 | 3 | feat: add request logging (item 4) | done |
-| 4 | feat: log external API calls (item 4) | |
+| 4 | feat: log external API calls (item 4) | done |
 | 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | |
 | 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | |
 | 6b | docs: document 401 and the Authorize button in Swagger | |

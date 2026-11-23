@@ -62,6 +62,17 @@ final class ErrorLogTest extends ApiTestCase
         $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/forbidden-as-operator 403 user=2 role=operator Only an admin may do this\.$/', $this->errorLogLines()[0] ?? '');
     }
 
+    // An external API that is down is the server's problem, not the user's: the line says which request it spoiled.
+    public function testA503IsLogged(): void
+    {
+        $server = $this->serverLoggingToTestFolder(self::FIXTURE_APP);
+
+        $response = $this->request('GET', '/unavailable', null, $server);
+
+        $this->assertSame(503, $response['status']);
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/unavailable 503 user=- role=- The weather service is not available right now\.$/', $this->errorLogLines()[0] ?? '');
+    }
+
     public function testAnUnexpectedErrorIsLoggedWithItsClassFileAndLineButTheClientGetsNoDetails(): void
     {
         $server = $this->serverLoggingToTestFolder(self::FIXTURE_APP);
@@ -119,6 +130,20 @@ final class ErrorLogTest extends ApiTestCase
         $this->request('DELETE', '/backend/machines/abc?force=1', null, $server);
 
         $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR DELETE \/machines\/abc 404 user=- role=- Endpoint DELETE \/machines\/abc does not exist\.$/', $this->errorLogLines()[0] ?? '');
+    }
+
+    // The developer sees why (the weather service's own line) and which request it cost (the middleware's line).
+    public function testTheRealAppLogsBothTheReasonAndThe503WhenTheWeatherIsDown(): void
+    {
+        $server = $this->serverLoggingToTestFolder('server.php', ['WEATHER_API_URL' => 'http://127.0.0.1:1/v1/forecast']);
+
+        $response = $this->request('GET', '/backend/weather', null, $server);
+
+        $this->assertSame(503, $response['status']);
+        $lines = $this->errorLogLines();
+        $this->assertCount(2, $lines);
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR Weather API \(Open-Meteo\) unavailable: request failed after \d+ms: /', $lines[0]);
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/weather 503 user=- role=- The weather service is not available right now\. Please try again later\.$/', $lines[1]);
     }
 
     public function testTheRealAppLogsAServerError(): void
