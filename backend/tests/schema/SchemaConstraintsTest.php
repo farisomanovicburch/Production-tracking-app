@@ -79,6 +79,22 @@ final class SchemaConstraintsTest extends DatabaseTestCase
         $this->insertRun($machineId, ['started_at' => '2026-10-20 14:00:00', 'ended_at' => '2026-10-20 08:00:00']);
     }
 
+    public function testMaintenanceCannotHaveZeroDuration(): void
+    {
+        $row = [
+            'machine_id' => $this->createMachine('extrusion'),
+            'user_id' => $this->createUser(),
+            'maintenance_type' => 'preventive',
+            'started_at' => '2026-10-20 08:00:00',
+            'ended_at' => '2026-10-20 08:00:00',
+            'description' => 'Gearbox oil change',
+        ];
+
+        $this->expectException(PDOException::class);
+        $this->expectExceptionMessageMatches('/chk_maintenance_records_ends_after_start/');
+        $this->insertRow('maintenance_records', $row);
+    }
+
     private function insertUser(string $email): int
     {
         return $this->insertRow('users', [

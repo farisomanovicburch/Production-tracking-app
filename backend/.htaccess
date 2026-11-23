@@ -1,0 +1,6 @@
+# With Apache: send every request that is not an existing file or folder to index.php, where FlightPHP routes it.
+# Existing files (the Swagger UI page, swagger.php) are served directly. php -S uses ../server.php instead.
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

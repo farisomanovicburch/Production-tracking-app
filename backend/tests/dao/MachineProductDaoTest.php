@@ -21,4 +21,24 @@ final class MachineProductDaoTest extends DatabaseTestCase
             array_map(fn ($link) => [$link['product_name'], $link['role']], $links)
         );
     }
+
+    public function testGetLinkFindsTheProductLinkedToTheMachineInThatRole(): void
+    {
+        $machineId = $this->createMachine('extrusion');
+        $productId = $this->createProduct();
+        $linkId = $this->insertRow('machine_products', ['machine_id' => $machineId, 'product_id' => $productId, 'role' => 'output']);
+
+        $link = (new MachineProductDao())->getLink($machineId, $productId, 'output');
+
+        $this->assertSame($linkId, $link['id']);
+    }
+
+    public function testGetLinkReturnsNullWhenTheProductIsLinkedOnlyInTheOtherRole(): void
+    {
+        $machineId = $this->createMachine('conversion');
+        $productId = $this->createProduct();
+        $this->insertRow('machine_products', ['machine_id' => $machineId, 'product_id' => $productId, 'role' => 'input']);
+
+        $this->assertNull((new MachineProductDao())->getLink($machineId, $productId, 'output'));
+    }
 }

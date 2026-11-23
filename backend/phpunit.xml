@@ -5,9 +5,22 @@
          colors="true"
          failOnWarning="true"
          failOnRisky="true">
+    <!-- Suites run in this order. The sample data is checked first: the route tests write through a real server,
+         so their rows are not rolled back and would no longer be the sample data (e.g. a recipe at 80 %). -->
     <testsuites>
+        <testsuite name="sample-data">
+            <directory>tests/schema</directory>
+        </testsuite>
         <testsuite name="backend">
             <directory>tests</directory>
+            <exclude>tests/schema</exclude>
         </testsuite>
     </testsuites>
+    <!-- Tests that call the real Open-Meteo need the internet, so they only run when asked for with the group option
+         (see README). An XML comment may not contain two hyphens in a row, so the option is not written out here. -->
+    <groups>
+        <exclude>
+            <group>internet</group>
+        </exclude>
+    </groups>
 </phpunit>

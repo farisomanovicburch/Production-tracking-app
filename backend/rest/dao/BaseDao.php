@@ -36,10 +36,66 @@ class BaseDao
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    // Real server-side prepares: values travel apart from the SQL text instead of being escaped
+                    // into it by PHP, and LIMIT ? accepts a bound number.
+                    PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
         }
         return self::$connection;
+    }
+
+    /* ---------- transactions ---------- */
+
+    // How many of the open transaction levels are savepoints opened by beginTransaction(). Static, because the
+    // connection is shared: a savepoint opened through one DAO is released through another.
+    private static $savepointDepth = 0;
+
+    // MySQL cannot open a transaction inside another one. Inside an open transaction (a PHPUnit test, or a service
+    // calling another service), a SAVEPOINT marks the spot instead, so a rollback undoes only the work since then.
+    public function beginTransaction()
+    {
+        if (self::connection()->inTransaction()) {
+            self::$savepointDepth++;
+            self::connection()->exec('SAVEPOINT sp' . self::$savepointDepth);
+        } else {
+            self::connection()->beginTransaction();
+        }
+    }
+
+    public function commit()
+    {
+        if (self::$savepointDepth > 0) {
+            self::connection()->exec('RELEASE SAVEPOINT sp' . self::$savepointDepth);
+            self::$savepointDepth--;
+        } else {
+            self::connection()->commit();
+        }
+    }
+
+    public function rollBack()
+    {
+        if (self::$savepointDepth > 0) {
+            self::connection()->exec('ROLLBACK TO SAVEPOINT sp' . self::$savepointDepth);
+            self::connection()->exec('RELEASE SAVEPOINT sp' . self::$savepointDepth);
+            self::$savepointDepth--;
+        } else {
+            self::connection()->rollBack();
+        }
+    }
+
+    // All or nothing: runs $work, commits if it finishes, rolls back and rethrows if it throws anything.
+    public function transaction(callable $work)
+    {
+        $this->beginTransaction();
+        try {
+            $result = $work();
+            $this->commit();
+            return $result;
+        } catch (Throwable $exception) {
+            $this->rollBack();
+            throw $exception;
+        }
     }
 
     /* ---------- helpers for child DAOs ---------- */
@@ -80,6 +136,10 @@ class BaseDao
     public function add($entity)
     {
         $entity = $this->onlyColumns($entity);
+        // Unlike an empty update, an empty insert cannot quietly do nothing: the caller expects a new row back.
+        if (count($entity) === 0) {
+            throw new InvalidArgumentException("Nothing to insert into {$this->tableName}: no writable column was given.");
+        }
         $columns = array_keys($entity);
 
         $this->execute(

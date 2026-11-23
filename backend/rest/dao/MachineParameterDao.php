@@ -5,7 +5,7 @@ class MachineParameterDao extends BaseDao
 {
     public function __construct()
     {
-        parent::__construct('machine_parameters', ['machine_id', 'name', 'unit', 'display_order']);
+        parent::__construct('machine_parameters', ['machine_id', 'name', 'unit', 'display_order', 'is_active']);
     }
 
     // The machine setup page and the run form list a machine's parameters in the order the admin chose.
@@ -13,6 +13,24 @@ class MachineParameterDao extends BaseDao
     {
         return $this->query(
             'SELECT * FROM machine_parameters WHERE machine_id = :machine_id ORDER BY display_order, id',
+            ['machine_id' => $machineId]
+        );
+    }
+
+    // A name is unique per machine (uq_machine_parameters_name), so the lookup needs both.
+    public function getByName($machineId, $name)
+    {
+        return $this->queryUnique(
+            'SELECT * FROM machine_parameters WHERE machine_id = :machine_id AND name = :name',
+            ['machine_id' => $machineId, 'name' => $name]
+        );
+    }
+
+    // New runs and conversions accept values only for these; the setup page uses getByMachine to show all of them.
+    public function getActiveByMachine($machineId)
+    {
+        return $this->query(
+            'SELECT * FROM machine_parameters WHERE machine_id = :machine_id AND is_active = TRUE ORDER BY display_order, id',
             ['machine_id' => $machineId]
         );
     }

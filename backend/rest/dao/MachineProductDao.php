@@ -20,4 +20,13 @@ class MachineProductDao extends BaseDao
             ['machine_id' => $machineId]
         );
     }
+
+    // A run's product must be an output of its machine, a conversion's film an input: the role is part of the check.
+    public function getLink($machineId, $productId, $role)
+    {
+        return $this->queryUnique(
+            'SELECT * FROM machine_products WHERE machine_id = :machine_id AND product_id = :product_id AND role = :role',
+            ['machine_id' => $machineId, 'product_id' => $productId, 'role' => $role]
+        );
+    }
 }

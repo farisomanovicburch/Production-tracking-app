@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../rest/dao/BaseDao.php';
+require_once __DIR__ . '/../utils/exceptions.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +38,18 @@ abstract class DatabaseTestCase extends TestCase
         $statement = $this->db->prepare("SELECT COUNT(*) FROM $table WHERE $column = :value");
         $statement->execute(['value' => $value]);
         return (int) $statement->fetchColumn();
+    }
+
+    // Checks the exact message, not only the exception class: the message is what the user reads, and a 400 for the
+    // wrong reason (a different rule) would otherwise pass.
+    protected function assertRejected(callable $action, string $message): void
+    {
+        try {
+            $action();
+            $this->fail("Accepted, expected: $message");
+        } catch (ValidationException $exception) {
+            $this->assertSame($message, $exception->getMessage());
+        }
     }
 
     /* ---------- fixtures ---------- */
