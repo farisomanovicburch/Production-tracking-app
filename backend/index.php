@@ -12,6 +12,7 @@ if (!file_exists(__DIR__ . '/config/config.php')) {
 }
 
 require_once __DIR__ . '/middleware/ErrorMiddleware.php';
+require_once __DIR__ . '/middleware/RequestLogMiddleware.php';
 require_once __DIR__ . '/rest/services/UserService.php';
 require_once __DIR__ . '/rest/services/MachineService.php';
 require_once __DIR__ . '/rest/services/MachineParameterService.php';
@@ -46,6 +47,12 @@ Flight::register('conversionRunService', 'ConversionRunService');
 Flight::register('conversionRunParameterValueService', 'ConversionRunParameterValueService');
 Flight::register('maintenanceRecordService', 'MaintenanceRecordService');
 Flight::register('weatherService', 'WeatherService');
+
+// Every request is logged to info.log, public or not.
+$requestLogMiddleware = new RequestLogMiddleware();
+Flight::before('start', function () use ($requestLogMiddleware) {
+    $requestLogMiddleware->before();
+});
 
 // Every exception and every unknown URL ends in ErrorMiddleware: one JSON format, and error.log for what matters.
 $errorMiddleware = new ErrorMiddleware();

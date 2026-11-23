@@ -34,19 +34,11 @@ Every entry points at the place in the code, README or Swagger that shows the pr
    - backend/public/v1/docs/doc_setup.php:44 (Swagger already promises it: "A deactivated user cannot log in.")
    - README.md:128 (`former@example.com`: "logging in is refused")
 3. Errors go to PHP's `error_log()`, not to `backend/logs/error.log`.
-   - backend/index.php:62 (`error_log((string) $exception)`)
    - backend/rest/services/WeatherService.php:192 (`error_log("Weather API (Open-Meteo) unavailable: ...")`)
    - backend/tests/services/WeatherServiceTest.php:20-29 (the test redirects `ini_set('error_log', ...)`, so it must change with the logger)
    - README.md:164-165 ("the details go only to the server log")
 4. Nothing writes `backend/logs/info.log`, including the required external-API-call lines.
    - backend/rest/services/WeatherService.php:131 (`curl_init`), :140 (`curl_exec`), :145 (`curl_getinfo` status): status and duration of the Open-Meteo call belong here
-   - backend/index.php:106 (`Flight::start()`): request logging has to be registered before this line
-   - .gitignore (`backend/logs/*`) and the empty backend/logs/: the logger must create the folder on a fresh clone
-5. The error handler and the 404 handler live in `index.php`; they move into middleware, and
-   401/403/404/500 get logged there.
-   - backend/index.php:49-70 (comment and `Flight::map('error', ...)`), :72-83 (comment and `Flight::map('notFound', ...)`)
-   - backend/tests/api/ErrorHandlerTest.php:7, :16, :30 (test the current handler)
-   - CLAUDE.md:33 (says "the error handler in index.php")
 6. `.htaccess` must pass the `Authorization` header to PHP, or Apache drops the token.
    - backend/.htaccess:3-6
 7. The JWT secret and expiry have no config yet.
@@ -102,7 +94,6 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 ### Housekeeping
 
 16. Delete these `.gitkeep` files when the first real file lands in the folder.
-    - backend/middleware/.gitkeep (first real file: the auth middleware)
     - frontend/js/services/.gitkeep (first real file: the API client)
 17. README.md still describes Milestone 3 and needs a 401/403 section.
     - README.md:3-8 (status says "Milestone 3"), :49 ("JWT (Milestone 4)"), :166 ("`401` and `403` come with login in Milestone 4")
@@ -125,8 +116,8 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 |---|---|---|
 | 0 | docs: log the Milestone 4 debt in todo.md | done |
 | 1 | feat: add the Logger (info/error, creates backend/logs/, never logs passwords) | done |
-| 2 | feat: add the error middleware (items 3, 5) | |
-| 3 | feat: add request logging (item 4) | |
+| 2 | feat: add the error middleware (items 3, 5) | done |
+| 3 | feat: add request logging (item 4) | done |
 | 4 | feat: log external API calls (item 4) | |
 | 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | |
 | 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | |

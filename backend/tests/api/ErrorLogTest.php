@@ -5,7 +5,7 @@ require_once __DIR__ . '/ApiTestCase.php';
 // of this test's own (LOG_DIRECTORY) and the test reads the file afterwards.
 final class ErrorLogTest extends ApiTestCase
 {
-    private const FIXTURE_APP = 'backend/tests/fixtures/error-middleware-app.php';
+    private const FIXTURE_APP = 'backend/tests/fixtures/middleware-app.php';
     private const TIME = '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]';
 
     private string $logFolder;
@@ -71,7 +71,7 @@ final class ErrorLogTest extends ApiTestCase
         $this->assertSame(500, $response['status']);
         $this->assertSame(['status' => 500, 'error' => 'Something went wrong on the server. Please try again later.'], $response['body']);
         $this->assertStringNotContainsString('boom', $response['raw']);
-        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/crash 500 user=- role=- RuntimeException: boom in .+error-middleware-app\.php:\d+$/', $this->errorLogLines()[0] ?? '');
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/crash 500 user=- role=- RuntimeException: boom in .+middleware-app\.php:\d+$/', $this->errorLogLines()[0] ?? '');
     }
 
     public function testAMistakeOfTheClientIsNotLogged(): void
