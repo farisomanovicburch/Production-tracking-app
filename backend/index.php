@@ -11,6 +11,7 @@ if (!file_exists(__DIR__ . '/config/config.php')) {
     exit('Missing backend/config/config.php: copy config.example.php to config.php and set your database password.');
 }
 
+require_once __DIR__ . '/middleware/ErrorMiddleware.php';
 require_once __DIR__ . '/rest/services/UserService.php';
 require_once __DIR__ . '/rest/services/MachineService.php';
 require_once __DIR__ . '/rest/services/MachineParameterService.php';
@@ -46,41 +47,10 @@ Flight::register('conversionRunParameterValueService', 'ConversionRunParameterVa
 Flight::register('maintenanceRecordService', 'MaintenanceRecordService');
 Flight::register('weatherService', 'WeatherService');
 
-/*
- * The one place that turns an exception into an answer, so no route needs a try/catch.
- *  - HttpException (thrown by a service): its own status and message, written for the user.
- *  - anything else (a PDOException, a bug): 500 with a general message. The details go to the server log only,
- *    because SQL, file paths and stack traces tell an attacker how the backend is built.
- */
-Flight::map('error', function (Throwable $exception) {
-    if ($exception instanceof HttpException) {
-        $status = $exception->getStatus();
-        $message = $exception->getMessage();
-    } else {
-        $status = 500;
-        $message = 'Something went wrong on the server. Please try again later.';
-        error_log((string) $exception);
-    }
-    Flight::response()
-        ->clearBody()
-        ->status($status)
-        ->header('Content-Type', 'application/json')
-        ->write(json_encode(['status' => $status, 'error' => $message]))
-        ->send();
-});
-
-// A URL that matches no route answers in the same JSON shape as every other error, naming what was asked for,
-// so a typo in the frontend shows up as a readable message instead of an HTML page.
-Flight::map('notFound', function () {
-    $request = Flight::request();
-    $path = strtok($request->url, '?');
-    Flight::response()
-        ->clearBody()
-        ->status(404)
-        ->header('Content-Type', 'application/json')
-        ->write(json_encode(['status' => 404, 'error' => "Endpoint {$request->method} $path does not exist."]))
-        ->send();
-});
+// Every exception and every unknown URL ends in ErrorMiddleware: one JSON format, and error.log for what matters.
+$errorMiddleware = new ErrorMiddleware();
+Flight::map('error', [$errorMiddleware, 'handle']);
+Flight::map('notFound', [$errorMiddleware, 'notFound']);
 
 Flight::route('GET /', function () {
     Flight::json(['app' => 'Production Tracker API', 'message' => 'The backend is running.', 'docs' => 'public/v1/docs/']);

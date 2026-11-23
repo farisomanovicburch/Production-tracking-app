@@ -160,7 +160,9 @@ abstract class ApiTestCase extends TestCase
             [1 => ['file', $log, 'w'], 2 => ['file', $log, 'a']],
             $pipes,
             realpath(__DIR__ . '/../../..'),
-            $environment === [] ? null : array_merge(getenv(), $environment)
+            // The app logs 404s and 500s, and these servers get plenty on purpose: they log into the temp folder, not
+            // into backend/logs. A test that wants to read the log passes its own LOG_DIRECTORY.
+            array_merge(getenv(), ['LOG_DIRECTORY' => sys_get_temp_dir() . '/production-tracker-test-logs'], $environment)
         );
 
         $deadline = microtime(true) + 5;

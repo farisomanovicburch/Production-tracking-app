@@ -21,10 +21,14 @@ class Logger
         self::write('error.log', 'ERROR', $message);
     }
 
-    /** Where the logs go. Defaults to backend/logs, the folder .gitignore keeps out of the repository. */
+    /*
+     * Where the logs go: the folder set with setDirectory(), else the LOG_DIRECTORY environment variable (how a test
+     * points a server in another process at its own folder), else backend/logs, which .gitignore keeps out of the
+     * repository.
+     */
     public static function directory()
     {
-        return self::$directory ?? dirname(__DIR__) . DIRECTORY_SEPARATOR . 'logs';
+        return self::$directory ?? (getenv('LOG_DIRECTORY') ?: dirname(__DIR__) . DIRECTORY_SEPARATOR . 'logs');
     }
 
     /** Tests point the logger at a folder of their own; null goes back to backend/logs. */

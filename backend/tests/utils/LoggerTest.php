@@ -157,6 +157,20 @@ final class LoggerTest extends TestCase
         }
     }
 
+    // How a test hands a log folder to a server running in another process, where setDirectory() cannot reach.
+    public function testTheFolderCanBeChosenWithTheLogDirectoryEnvironmentVariable(): void
+    {
+        Logger::setDirectory(null);
+        putenv('LOG_DIRECTORY=' . $this->folder . DIRECTORY_SEPARATOR . 'from-environment');
+
+        try {
+            Logger::info('chosen by the environment');
+            $this->assertFileExists($this->folder . DIRECTORY_SEPARATOR . 'from-environment' . DIRECTORY_SEPARATOR . 'info.log');
+        } finally {
+            putenv('LOG_DIRECTORY');
+        }
+    }
+
     public function testTheDefaultFolderIsBackendLogs(): void
     {
         Logger::setDirectory(null);
