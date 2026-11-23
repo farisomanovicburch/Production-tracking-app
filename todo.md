@@ -123,13 +123,13 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 
 | # | Commit | Status |
 |---|---|---|
-| 0 | docs: log the Milestone 4 debt in todo.md | this file |
-| 1 | feat: add the Logger (info/error, creates backend/logs/, never logs passwords) | |
+| 0 | docs: log the Milestone 4 debt in todo.md | done |
+| 1 | feat: add the Logger (info/error, creates backend/logs/, never logs passwords) | done |
 | 2 | feat: add the error middleware (items 3, 5) | |
 | 3 | feat: add request logging (item 4) | |
 | 4 | feat: log external API calls (item 4) | |
-| 5 | feat: register, login, JWT, GET /auth/me (items 2, 6, 7) | |
-| 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B) | |
+| 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | |
+| 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | |
 | 6b | docs: document 401 and the Authorize button in Swagger | |
 | 7 | refactor: take the user from the token (item 1) | |
 | 8 | feat: RoleMiddleware, 403 and the role matrix | waits for lecture 8 |
