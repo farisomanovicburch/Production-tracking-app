@@ -13,6 +13,7 @@ use OpenApi\Attributes as OA;
     version: '1.0'
 )]
 #[OA\Server(url: API_BASE_URL, description: 'This server')]
+#[OA\SecurityScheme(securityScheme: 'bearerAuth', type: 'http', scheme: 'bearer', bearerFormat: 'JWT')]
 
 /* ---------- shared answers: must match what the error handler and the DELETE routes send ---------- */
 #[OA\Schema(
@@ -53,6 +54,31 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'role', type: 'string', enum: ['admin', 'operator'], example: 'operator'),
         new OA\Property(property: 'is_active', type: 'integer', enum: [0, 1], example: 1),
         new OA\Property(property: 'created_at', type: 'string', example: '2026-11-19 08:00:00')
+    ]
+)]
+/* ---------- auth: register and login answer in the same shape ---------- */
+#[OA\Schema(
+    schema: 'RegisterInput',
+    required: ['full_name', 'email', 'password'],
+    properties: [
+        new OA\Property(property: 'full_name', type: 'string', example: 'New Operator'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'new.operator@example.com'),
+        new OA\Property(property: 'password', type: 'string', example: 'secret123', description: 'At least 8 characters with a letter and a number.')
+    ]
+)]
+#[OA\Schema(
+    schema: 'LoginInput',
+    required: ['email', 'password'],
+    properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
+        new OA\Property(property: 'password', type: 'string', example: 'admin123')
+    ]
+)]
+#[OA\Schema(
+    schema: 'AuthResponse',
+    properties: [
+        new OA\Property(property: 'user', ref: '#/components/schemas/User'),
+        new OA\Property(property: 'token', type: 'string', description: 'JWT. Send it as "Authorization: Bearer <token>".', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...')
     ]
 )]
 /*

@@ -29,16 +29,10 @@ Every entry points at the place in the code, README or Swagger that shows the pr
    - Tests that build a body with `user_id`: backend/tests/api/ApiTestCase.php:81, :101, :126, :134;
      backend/tests/api/MaintenanceRecordRoutesTest.php:13;
      backend/tests/services/ProductionRunServiceTest.php, ConversionRunServiceTest.php, MaintenanceRecordServiceTest.php (search `user_id`)
-2. A deactivated user must not be able to log in once login exists.
-   - backend/tests/services/UserServiceTest.php:165 (comment that already expects it)
-   - backend/public/v1/docs/doc_setup.php:44 (Swagger already promises it: "A deactivated user cannot log in.")
-   - README.md:128 (`former@example.com`: "logging in is refused")
 3. Errors go to PHP's `error_log()`, not to `backend/logs/error.log`.
    - README.md:164-165 ("the details go only to the server log")
 6. `.htaccess` must pass the `Authorization` header to PHP, or Apache drops the token.
    - backend/.htaccess:3-6
-7. The JWT secret and expiry have no config yet.
-   - backend/config/config.example.php:4 (comment: "the JWT secret later"); config.php is git-ignored, so add placeholders to the example only
 
 ### Frontend that does not match the database (the "step C" moved to M4)
 
@@ -115,7 +109,7 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 | 2 | feat: add the error middleware (items 3, 5) | done |
 | 3 | feat: add request logging (item 4) | done |
 | 4 | feat: log external API calls (item 4) | done |
-| 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | |
+| 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | done |
 | 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | |
 | 6b | docs: document 401 and the Authorize button in Swagger | |
 | 7 | refactor: take the user from the token (item 1) | |

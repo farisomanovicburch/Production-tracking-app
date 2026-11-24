@@ -13,6 +13,8 @@ if (!file_exists(__DIR__ . '/config/config.php')) {
 
 require_once __DIR__ . '/middleware/ErrorMiddleware.php';
 require_once __DIR__ . '/middleware/RequestLogMiddleware.php';
+require_once __DIR__ . '/middleware/AuthMiddleware.php';
+require_once __DIR__ . '/rest/services/AuthService.php';
 require_once __DIR__ . '/rest/services/UserService.php';
 require_once __DIR__ . '/rest/services/MachineService.php';
 require_once __DIR__ . '/rest/services/MachineParameterService.php';
@@ -31,6 +33,7 @@ require_once __DIR__ . '/rest/services/MaintenanceRecordService.php';
 require_once __DIR__ . '/rest/services/WeatherService.php';
 
 // Each service is created once, on first use; a route gets it with Flight::userService() instead of `new`.
+Flight::register('authService', 'AuthService');
 Flight::register('userService', 'UserService');
 Flight::register('machineService', 'MachineService');
 Flight::register('machineParameterService', 'MachineParameterService');
@@ -63,6 +66,7 @@ Flight::route('GET /', function () {
     Flight::json(['app' => 'Production Tracker API', 'message' => 'The backend is running.', 'docs' => 'public/v1/docs/']);
 });
 
+require_once __DIR__ . '/rest/routes/AuthRoutes.php';
 require_once __DIR__ . '/rest/routes/UserRoutes.php';
 require_once __DIR__ . '/rest/routes/MachineRoutes.php';
 require_once __DIR__ . '/rest/routes/MachineParameterRoutes.php';

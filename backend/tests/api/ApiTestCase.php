@@ -24,10 +24,10 @@ abstract class ApiTestCase extends TestCase
     }
 
     /** @return array{status: int, body: array|null, raw: string} */
-    protected function request(string $method, string $path, ?array $body = null, ?string $baseUrl = null): array
+    protected function request(string $method, string $path, ?array $body = null, ?string $baseUrl = null, array $extraHeaders = []): array
     {
         $curl = curl_init(($baseUrl ?? self::$baseUrl) . $path);
-        $headers = ['Accept: application/json'];
+        $headers = array_merge(['Accept: application/json'], $extraHeaders);
         if ($body !== null) {
             $headers[] = 'Content-Type: application/json';
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));

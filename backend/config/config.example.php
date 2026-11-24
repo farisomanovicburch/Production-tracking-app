@@ -1,7 +1,7 @@
 <?php
 /*
  * Template for config.php: copy this file to config.php (same folder) and put your real values there.
- * config.php is in .gitignore because it holds secrets (the database password now, the JWT secret later)
+ * config.php is in .gitignore because it holds secrets (the database password and the JWT secret)
  * and this repository is public. This file is committed so everyone knows which settings exist.
  */
 class Config
@@ -18,6 +18,12 @@ class Config
     public static function WEATHER_LONGITUDE()       { return self::getEnv('WEATHER_LONGITUDE', 18.4131); }
     public static function WEATHER_LOCATION_NAME()   { return self::getEnv('WEATHER_LOCATION_NAME', 'Sarajevo'); }
     public static function WEATHER_TIMEOUT_SECONDS() { return self::getEnv('WEATHER_TIMEOUT_SECONDS', 5); }
+
+    // Login tokens. Whoever knows the secret can sign a token for any user, so in config.php replace this example with
+    // your own random string (php -r "echo bin2hex(random_bytes(32));"). The library refuses a secret shorter than 32 bytes.
+    public static function JWT_SECRET()     { return self::getEnv('JWT_SECRET', 'change-me-to-a-long-random-string-of-at-least-32-characters'); }
+    // How long a token works, in seconds (24 hours). Without an expiry a stolen token would work forever.
+    public static function JWT_EXPIRATION() { return self::getEnv('JWT_EXPIRATION', 60 * 60 * 24); }
 
     // A hosting server (Milestone 5) sets environment variables, which win over the values in this file.
     private static function getEnv($name, $default)
