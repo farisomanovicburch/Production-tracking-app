@@ -143,7 +143,8 @@ final class ErrorLogTest extends ApiTestCase
         $lines = $this->errorLogLines();
         $this->assertCount(2, $lines);
         $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR Weather API \(Open-Meteo\) unavailable: request failed after \d+ms: /', $lines[0]);
-        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/weather 503 user=- role=- The weather service is not available right now\. Please try again later\.$/', $lines[1]);
+        // The weather is behind login now, so the line also says who asked (the test's default token is the sample admin's).
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' ERROR GET \/weather 503 user=\d+ role=admin The weather service is not available right now\. Please try again later\.$/', $lines[1]);
     }
 
     public function testTheRealAppLogsAServerError(): void

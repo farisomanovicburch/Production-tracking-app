@@ -31,8 +31,6 @@ Every entry points at the place in the code, README or Swagger that shows the pr
      backend/tests/services/ProductionRunServiceTest.php, ConversionRunServiceTest.php, MaintenanceRecordServiceTest.php (search `user_id`)
 3. Errors go to PHP's `error_log()`, not to `backend/logs/error.log`.
    - README.md:164-165 ("the details go only to the server log")
-6. `.htaccess` must pass the `Authorization` header to PHP, or Apache drops the token.
-   - backend/.htaccess:3-6
 
 ### Frontend that does not match the database (the "step C" moved to M4)
 
@@ -110,7 +108,7 @@ Every entry points at the place in the code, README or Swagger that shows the pr
 | 3 | feat: add request logging (item 4) | done |
 | 4 | feat: log external API calls (item 4) | done |
 | 5 | feat: register, login, JWT, GET /auth/me (items 2, 7) | done |
-| 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | |
+| 6a | feat: protect the API with AuthMiddleware (stale-token decision: Option B; item 6, the .htaccess header rule) | done |
 | 6b | docs: document 401 and the Authorize button in Swagger | |
 | 7 | refactor: take the user from the token (item 1) | |
 | 8 | feat: RoleMiddleware, 403 and the role matrix | waits for lecture 8 |

@@ -66,22 +66,29 @@ Flight::route('GET /', function () {
     Flight::json(['app' => 'Production Tracker API', 'message' => 'The backend is running.', 'docs' => 'public/v1/docs/']);
 });
 
+// Public: a user who is not logged in has no token yet, so login and register must stay outside the group below.
+// (AuthRoutes.php also holds GET /auth/me, which puts AuthMiddleware on itself.)
 require_once __DIR__ . '/rest/routes/AuthRoutes.php';
-require_once __DIR__ . '/rest/routes/UserRoutes.php';
-require_once __DIR__ . '/rest/routes/MachineRoutes.php';
-require_once __DIR__ . '/rest/routes/MachineParameterRoutes.php';
-require_once __DIR__ . '/rest/routes/MachineProductRoutes.php';
-require_once __DIR__ . '/rest/routes/ProductRoutes.php';
-require_once __DIR__ . '/rest/routes/MaterialRoutes.php';
-require_once __DIR__ . '/rest/routes/RecipeRoutes.php';
-require_once __DIR__ . '/rest/routes/RecipeItemRoutes.php';
-require_once __DIR__ . '/rest/routes/RecipeProductRoutes.php';
-require_once __DIR__ . '/rest/routes/ProductionRunRoutes.php';
-require_once __DIR__ . '/rest/routes/RunParameterValueRoutes.php';
-require_once __DIR__ . '/rest/routes/MaterialUsageRoutes.php';
-require_once __DIR__ . '/rest/routes/ConversionRunRoutes.php';
-require_once __DIR__ . '/rest/routes/ConversionRunParameterValueRoutes.php';
-require_once __DIR__ . '/rest/routes/MaintenanceRecordRoutes.php';
-require_once __DIR__ . '/rest/routes/WeatherRoutes.php';
+
+// Protected: AuthMiddleware runs before every route in this group. A routes file added here is protected without
+// anyone having to remember a check, and ProtectedRoutesTest fails if one is required outside the group.
+Flight::group('', function () {
+    require_once __DIR__ . '/rest/routes/UserRoutes.php';
+    require_once __DIR__ . '/rest/routes/MachineRoutes.php';
+    require_once __DIR__ . '/rest/routes/MachineParameterRoutes.php';
+    require_once __DIR__ . '/rest/routes/MachineProductRoutes.php';
+    require_once __DIR__ . '/rest/routes/ProductRoutes.php';
+    require_once __DIR__ . '/rest/routes/MaterialRoutes.php';
+    require_once __DIR__ . '/rest/routes/RecipeRoutes.php';
+    require_once __DIR__ . '/rest/routes/RecipeItemRoutes.php';
+    require_once __DIR__ . '/rest/routes/RecipeProductRoutes.php';
+    require_once __DIR__ . '/rest/routes/ProductionRunRoutes.php';
+    require_once __DIR__ . '/rest/routes/RunParameterValueRoutes.php';
+    require_once __DIR__ . '/rest/routes/MaterialUsageRoutes.php';
+    require_once __DIR__ . '/rest/routes/ConversionRunRoutes.php';
+    require_once __DIR__ . '/rest/routes/ConversionRunParameterValueRoutes.php';
+    require_once __DIR__ . '/rest/routes/MaintenanceRecordRoutes.php';
+    require_once __DIR__ . '/rest/routes/WeatherRoutes.php';
+}, [new AuthMiddleware()]);
 
 Flight::start();

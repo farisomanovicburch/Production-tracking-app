@@ -135,7 +135,7 @@ final class AuthRoutesTest extends ApiTestCase
 
     public function testMeWithoutATokenAnswers401(): void
     {
-        $response = $this->request('GET', '/backend/auth/me');
+        $response = $this->requestWithoutToken('GET', '/backend/auth/me');
 
         $this->assertSame(401, $response['status']);
         $this->assertSame(['status' => 401, 'error' => 'Missing authentication token.'], $response['body']);

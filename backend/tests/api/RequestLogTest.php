@@ -91,7 +91,7 @@ final class RequestLogTest extends ApiTestCase
 
         $this->request('GET', '/backend/users/999999?token=abc123&page=2', null, $server);
 
-        $this->assertMatchesRegularExpression('/^' . self::TIME . ' INFO GET \/users\/999999 404 user=- role=- \d+ms$/', $this->infoLogLines()[0] ?? '');
+        $this->assertMatchesRegularExpression('/^' . self::TIME . ' INFO GET \/users\/999999 404 user=\d+ role=admin \d+ms$/', $this->infoLogLines()[0] ?? '');
     }
 
     public function testARequestThatFailsOnTheServerIsLoggedAs500(): void

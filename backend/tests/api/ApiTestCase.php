@@ -23,8 +23,39 @@ abstract class ApiTestCase extends TestCase
         }
     }
 
-    /** @return array{status: int, body: array|null, raw: string} */
+    /*
+     * Every route except login, register and the API root needs a token, so a request carries the sample admin's by
+     * default: the route tests are about what the routes do, not about who calls them. A test that sends a token of its
+     * own (an "Authorization: ..." entry in $extraHeaders) keeps it; one that needs no token at all uses
+     * requestWithoutToken().
+     * @return array{status: int, body: array|null, raw: string}
+     */
     protected function request(string $method, string $path, ?array $body = null, ?string $baseUrl = null, array $extraHeaders = []): array
+    {
+        $sendsItsOwnToken = array_filter($extraHeaders, fn ($header) => stripos($header, 'Authorization:') === 0);
+        if (!$sendsItsOwnToken) {
+            $extraHeaders[] = 'Authorization: Bearer ' . $this->adminToken();
+        }
+        return $this->send($method, $path, $body, $baseUrl, $extraHeaders);
+    }
+
+    /** @return array{status: int, body: array|null, raw: string} */
+    protected function requestWithoutToken(string $method, string $path, ?array $body = null, ?string $baseUrl = null): array
+    {
+        return $this->send($method, $path, $body, $baseUrl, []);
+    }
+
+    // One login for the whole test run. The token is valid for 24 hours and signed with the same secret on every
+    // server a test starts, so the other servers (broken database, fake weather) accept it too.
+    private static $adminToken = null;
+
+    private function adminToken(): string
+    {
+        self::$adminToken ??= $this->send('POST', '/backend/auth/login', ['email' => 'admin@example.com', 'password' => 'admin123'], null, [])['body']['token'];
+        return self::$adminToken;
+    }
+
+    private function send(string $method, string $path, ?array $body, ?string $baseUrl, array $extraHeaders): array
     {
         $curl = curl_init(($baseUrl ?? self::$baseUrl) . $path);
         $headers = array_merge(['Accept: application/json'], $extraHeaders);
