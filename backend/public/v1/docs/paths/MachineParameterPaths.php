@@ -11,6 +11,7 @@ class MachineParameterPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Machine id', example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The parameters, active and deactivated', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/MachineParameter'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -25,6 +26,7 @@ class MachineParameterPaths
         responses: [
             new OA\Response(response: 201, description: 'The created parameter', content: new OA\JsonContent(ref: '#/components/schemas/MachineParameter')),
             new OA\Response(response: 400, description: 'Invalid data or the machine already has a parameter with this name', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -37,6 +39,7 @@ class MachineParameterPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 2, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The parameter', content: new OA\JsonContent(ref: '#/components/schemas/MachineParameter')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine parameter not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -52,6 +55,7 @@ class MachineParameterPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated parameter', content: new OA\JsonContent(ref: '#/components/schemas/MachineParameter')),
             new OA\Response(response: 400, description: 'Invalid data or the name is taken on this machine', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine parameter not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -65,6 +69,7 @@ class MachineParameterPaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'Runs or conversions have values for it: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine parameter not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

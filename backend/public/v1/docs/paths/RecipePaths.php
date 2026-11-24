@@ -9,7 +9,8 @@ class RecipePaths
         tags: ['recipes'],
         summary: 'List all recipes',
         responses: [
-            new OA\Response(response: 200, description: 'All recipes', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Recipe')))
+            new OA\Response(response: 200, description: 'All recipes', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Recipe'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getRecipes() {}
@@ -21,6 +22,7 @@ class RecipePaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 2, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The recipe', content: new OA\JsonContent(ref: '#/components/schemas/Recipe')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -33,7 +35,8 @@ class RecipePaths
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/RecipeInput')),
         responses: [
             new OA\Response(response: 201, description: 'The created recipe', content: new OA\JsonContent(ref: '#/components/schemas/Recipe')),
-            new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
+            new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postRecipes() {}
@@ -48,6 +51,7 @@ class RecipePaths
         responses: [
             new OA\Response(response: 200, description: 'The updated recipe', content: new OA\JsonContent(ref: '#/components/schemas/Recipe')),
             new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -62,6 +66,7 @@ class RecipePaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'The recipe has production runs: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

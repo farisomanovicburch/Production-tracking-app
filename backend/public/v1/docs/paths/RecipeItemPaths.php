@@ -11,6 +11,7 @@ class RecipeItemPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Recipe id', example: 2, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The items with material names', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/RecipeItemWithName'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -25,6 +26,7 @@ class RecipeItemPaths
         responses: [
             new OA\Response(response: 201, description: 'The created item', content: new OA\JsonContent(ref: '#/components/schemas/RecipeItem')),
             new OA\Response(response: 400, description: 'Invalid data, unknown material, material already in the recipe, or more than 100 % in total', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -40,6 +42,7 @@ class RecipeItemPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated item', content: new OA\JsonContent(ref: '#/components/schemas/RecipeItem')),
             new OA\Response(response: 400, description: 'Invalid data, material already in the recipe, or more than 100 % in total', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe item not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -52,6 +55,7 @@ class RecipeItemPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 9, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe item not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

@@ -12,6 +12,7 @@ class WeatherPaths
             '5 second timeout. The location is set in config.php. Data: CC BY 4.0, Open-Meteo.com.',
         responses: [
             new OA\Response(response: 200, description: 'The weather for the dashboard card', content: new OA\JsonContent(ref: '#/components/schemas/Weather')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(
                 response: 503,
                 description: 'Open-Meteo is unreachable, too slow, or gave an answer that cannot be used (the reason is in the server log)',

@@ -11,6 +11,7 @@ class RecipeProductPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Recipe id', example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The links with product code and name', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/RecipeProductWithName'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -26,6 +27,7 @@ class RecipeProductPaths
         responses: [
             new OA\Response(response: 201, description: 'The created link', content: new OA\JsonContent(ref: '#/components/schemas/RecipeProduct')),
             new OA\Response(response: 400, description: 'Invalid data, unknown product or a link that already exists', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -41,6 +43,7 @@ class RecipeProductPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated link', content: new OA\JsonContent(ref: '#/components/schemas/RecipeProduct')),
             new OA\Response(response: 400, description: 'is_default missing or not true/false', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe product link not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -54,6 +57,7 @@ class RecipeProductPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 3, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Removed', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Recipe product link not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

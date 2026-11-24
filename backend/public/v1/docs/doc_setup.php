@@ -14,6 +14,17 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\Server(url: API_BASE_URL, description: 'This server')]
 #[OA\SecurityScheme(securityScheme: 'bearerAuth', type: 'http', scheme: 'bearer', bearerFormat: 'JWT')]
+/*
+ * Every path needs the token unless it says security: [] (GET /, register and login). One global rule instead of
+ * 60-odd copies, so a path added tomorrow is locked in Swagger UI as well as on the server.
+ */
+#[OA\OpenApi(security: [['bearerAuth' => []]])]
+/* The 401 that AuthMiddleware sends; paths point to it with new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'). */
+#[OA\Response(
+    response: 'Unauthorized',
+    description: 'Missing, invalid or expired token, or the account was deactivated after the token was issued',
+    content: new OA\JsonContent(ref: '#/components/schemas/Error')
+)]
 
 /* ---------- shared answers: must match what the error handler and the DELETE routes send ---------- */
 #[OA\Schema(

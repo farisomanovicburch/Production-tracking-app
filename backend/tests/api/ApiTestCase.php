@@ -78,10 +78,36 @@ abstract class ApiTestCase extends TestCase
     // The documentation must not lie: every status a route really answers with has to be listed in Swagger.
     protected function assertDocumented(string $method, string $pathTemplate, int $status): void
     {
-        self::$openApi ??= $this->request('GET', '/backend/public/v1/docs/swagger.php')['body'];
-        $responses = self::$openApi['paths'][$pathTemplate][strtolower($method)]['responses'] ?? [];
+        $responses = $this->openApiDocument()['paths'][$pathTemplate][strtolower($method)]['responses'] ?? [];
 
         $this->assertArrayHasKey((string) $status, $responses, "$method $pathTemplate does not document $status.");
+    }
+
+    // The OpenAPI JSON that Swagger UI reads, fetched once per run: generating it parses every Paths file.
+    protected function openApiDocument(): array
+    {
+        self::$openApi ??= $this->request('GET', '/backend/public/v1/docs/swagger.php')['body'];
+        return self::$openApi;
+    }
+
+    /*
+     * Every route that sits behind AuthMiddleware, read out of rest/routes/*.php so that a route added tomorrow is
+     * covered tomorrow. AuthRoutes.php is left out: login and register are public and /auth/me checks the token itself.
+     * @return array<int, array{0: string, 1: string}> e.g. ['GET', '/machines/@id:[0-9]+']
+     */
+    protected static function protectedRoutePatterns(): array
+    {
+        $routes = [];
+        foreach (glob(dirname(__DIR__, 2) . '/rest/routes/*Routes.php') as $file) {
+            if (basename($file) === 'AuthRoutes.php') {
+                continue;
+            }
+            preg_match_all("/Flight::route\('([A-Z]+) ([^']+)'/", file_get_contents($file), $found, PREG_SET_ORDER);
+            foreach ($found as [, $method, $pattern]) {
+                $routes[] = [$method, $pattern];
+            }
+        }
+        return $routes;
     }
 
     /*

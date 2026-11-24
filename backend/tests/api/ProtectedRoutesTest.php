@@ -29,18 +29,11 @@ final class ProtectedRoutesTest extends ApiTestCase
     private function protectedRoutes(): array
     {
         $routes = [];
-        foreach (glob(dirname(__DIR__, 2) . '/rest/routes/*Routes.php') as $file) {
-            // Login and register are public on purpose; GET /auth/me checks the token itself.
-            if (basename($file) === 'AuthRoutes.php') {
-                continue;
-            }
-            preg_match_all("/Flight::route\('([A-Z]+) ([^']+)'/", file_get_contents($file), $found, PREG_SET_ORDER);
-            foreach ($found as [, $method, $pattern]) {
-                // "@id:[0-9]+" becomes the biggest id the database can hold. The token is checked first, so the id does not
-                // matter when the app is protected; when it is not (this test failing), a DELETE or PUT on that id finds no
-                // row and changes nothing, where id 1 would have deleted real data.
-                $routes[] = $method . ' ' . preg_replace('/@\w+(:\[[^\]]+\]\+?)?/', '2147483647', $pattern);
-            }
+        foreach (self::protectedRoutePatterns() as [$method, $pattern]) {
+            // "@id:[0-9]+" becomes the biggest id the database can hold. The token is checked first, so the id does not
+            // matter when the app is protected; when it is not (this test failing), a DELETE or PUT on that id finds no
+            // row and changes nothing, where id 1 would have deleted real data.
+            $routes[] = $method . ' ' . preg_replace('/@\w+(:\[[^\]]+\]\+?)?/', '2147483647', $pattern);
         }
         return $routes;
     }

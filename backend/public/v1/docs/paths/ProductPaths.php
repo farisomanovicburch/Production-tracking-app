@@ -9,7 +9,8 @@ class ProductPaths
         tags: ['products'],
         summary: 'List all products',
         responses: [
-            new OA\Response(response: 200, description: 'All products', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Product')))
+            new OA\Response(response: 200, description: 'All products', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Product'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getProducts() {}
@@ -21,6 +22,7 @@ class ProductPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The product', content: new OA\JsonContent(ref: '#/components/schemas/Product')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Product not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -33,7 +35,8 @@ class ProductPaths
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ProductInput')),
         responses: [
             new OA\Response(response: 201, description: 'The created product', content: new OA\JsonContent(ref: '#/components/schemas/Product')),
-            new OA\Response(response: 400, description: 'Invalid data or code already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
+            new OA\Response(response: 400, description: 'Invalid data or code already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postProducts() {}
@@ -49,6 +52,7 @@ class ProductPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated product', content: new OA\JsonContent(ref: '#/components/schemas/Product')),
             new OA\Response(response: 400, description: 'Invalid data or code already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Product not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -63,6 +67,7 @@ class ProductPaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'The product has runs or conversions: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Product not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

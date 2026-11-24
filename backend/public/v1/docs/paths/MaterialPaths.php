@@ -9,7 +9,8 @@ class MaterialPaths
         tags: ['materials'],
         summary: 'List all materials with their stock',
         responses: [
-            new OA\Response(response: 200, description: 'All materials', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Material')))
+            new OA\Response(response: 200, description: 'All materials', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Material'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getMaterials() {}
@@ -21,6 +22,7 @@ class MaterialPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 2, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The material', content: new OA\JsonContent(ref: '#/components/schemas/Material')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Material not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -33,7 +35,8 @@ class MaterialPaths
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/MaterialInput')),
         responses: [
             new OA\Response(response: 201, description: 'The created material', content: new OA\JsonContent(ref: '#/components/schemas/Material')),
-            new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
+            new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postMaterials() {}
@@ -48,6 +51,7 @@ class MaterialPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated material', content: new OA\JsonContent(ref: '#/components/schemas/Material')),
             new OA\Response(response: 400, description: 'Invalid data or name already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Material not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -62,6 +66,7 @@ class MaterialPaths
         responses: [
             new OA\Response(response: 200, description: 'The material with its new stock', content: new OA\JsonContent(ref: '#/components/schemas/Material')),
             new OA\Response(response: 400, description: 'Missing quantity, or not more than 0', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Material not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -75,6 +80,7 @@ class MaterialPaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'Used in recipes or runs: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Material not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

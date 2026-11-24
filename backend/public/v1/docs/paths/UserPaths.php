@@ -12,7 +12,8 @@ class UserPaths
         tags: ['users'],
         summary: 'List all users (never with passwords)',
         responses: [
-            new OA\Response(response: 200, description: 'All users', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/User')))
+            new OA\Response(response: 200, description: 'All users', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/User'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getUsers() {}
@@ -24,6 +25,7 @@ class UserPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The user', content: new OA\JsonContent(ref: '#/components/schemas/User')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'User not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -37,7 +39,8 @@ class UserPaths
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/UserInput')),
         responses: [
             new OA\Response(response: 201, description: 'The created user', content: new OA\JsonContent(ref: '#/components/schemas/User')),
-            new OA\Response(response: 400, description: 'Invalid data, weak password or email already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
+            new OA\Response(response: 400, description: 'Invalid data, weak password or email already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postUsers() {}
@@ -52,6 +55,7 @@ class UserPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated user', content: new OA\JsonContent(ref: '#/components/schemas/User')),
             new OA\Response(response: 400, description: 'Invalid data or email already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'User not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -65,6 +69,7 @@ class UserPaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'The user has logged runs, conversions or maintenance: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'User not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

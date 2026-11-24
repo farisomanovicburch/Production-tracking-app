@@ -10,6 +10,7 @@ class ApiPaths
     #[OA\Get(
         path: '/',
         tags: ['api'],
+        security: [],
         summary: 'Check that the backend is running',
         responses: [
             new OA\Response(

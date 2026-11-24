@@ -9,7 +9,8 @@ class ConversionRunPaths
         tags: ['conversion runs'],
         summary: 'List all conversions, newest first (without parameter values)',
         responses: [
-            new OA\Response(response: 200, description: 'All conversions with names and calculated scrap', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/ConversionRun')))
+            new OA\Response(response: 200, description: 'All conversions with names and calculated scrap', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/ConversionRun'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getConversionRuns() {}
@@ -21,6 +22,7 @@ class ConversionRunPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The conversion', content: new OA\JsonContent(ref: '#/components/schemas/ConversionRunWithDetails')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Conversion run not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -38,7 +40,8 @@ class ConversionRunPaths
                 response: 400,
                 description: 'Invalid data, output above input, wrong time order, a machine/product/user that does not fit or is deactivated, or missing parameter values',
                 content: new OA\JsonContent(ref: '#/components/schemas/Error')
-            )
+            ),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postConversionRuns() {}
@@ -53,6 +56,7 @@ class ConversionRunPaths
         responses: [
             new OA\Response(response: 200, description: 'The updated conversion', content: new OA\JsonContent(ref: '#/components/schemas/ConversionRunWithDetails')),
             new OA\Response(response: 400, description: 'Invalid data, output above input or wrong time order', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Conversion run not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -65,6 +69,7 @@ class ConversionRunPaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 3, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Conversion run not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]

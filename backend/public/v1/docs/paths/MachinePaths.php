@@ -9,7 +9,8 @@ class MachinePaths
         tags: ['machines'],
         summary: 'List all machines',
         responses: [
-            new OA\Response(response: 200, description: 'All machines', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Machine')))
+            new OA\Response(response: 200, description: 'All machines', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/Machine'))),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function getMachines() {}
@@ -21,6 +22,7 @@ class MachinePaths
         parameters: [new OA\Parameter(name: 'id', in: 'path', required: true, example: 1, schema: new OA\Schema(type: 'integer'))],
         responses: [
             new OA\Response(response: 200, description: 'The machine', content: new OA\JsonContent(ref: '#/components/schemas/Machine')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -33,7 +35,8 @@ class MachinePaths
         requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/MachineInput')),
         responses: [
             new OA\Response(response: 201, description: 'The created machine', content: new OA\JsonContent(ref: '#/components/schemas/Machine')),
-            new OA\Response(response: 400, description: 'Invalid data or code already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
+            new OA\Response(response: 400, description: 'Invalid data or code already in use', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized')
         ]
     )]
     public function postMachines() {}
@@ -48,6 +51,7 @@ class MachinePaths
         responses: [
             new OA\Response(response: 200, description: 'The updated machine', content: new OA\JsonContent(ref: '#/components/schemas/Machine')),
             new OA\Response(response: 400, description: 'Invalid data, code already in use or a changed type', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
@@ -62,6 +66,7 @@ class MachinePaths
         responses: [
             new OA\Response(response: 200, description: 'Deleted', content: new OA\JsonContent(ref: '#/components/schemas/Message')),
             new OA\Response(response: 400, description: 'The machine has runs, conversions or maintenance records: deactivate instead', content: new OA\JsonContent(ref: '#/components/schemas/Error')),
+            new OA\Response(response: 401, ref: '#/components/responses/Unauthorized'),
             new OA\Response(response: 404, description: 'Machine not found', content: new OA\JsonContent(ref: '#/components/schemas/Error'))
         ]
     )]
